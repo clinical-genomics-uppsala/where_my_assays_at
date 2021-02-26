@@ -1,6 +1,6 @@
 # where_my_assays_at
 
-###ddPCR database service
+### ddPCR database service
 
 Simple django app to handle ddPCR assay design and order. It is using a PostgreSQL database backend.
 
