@@ -61,6 +61,9 @@ class AssayType(models.Model):
     status = models.IntegerField(choices=Status.choices)
     comment = models.CharField(max_length=500)
 
+    def __str__(self):
+        return self.assay_id
+
 class Enzyme(models.Model):
 
     class RestrictionEnzymes(models.TextChoices):
@@ -79,6 +82,9 @@ class Enzyme(models.Model):
         choices=RestrictionEnzymes.choices
     )
 
+    def __str__(self):
+        return "{0}_{1}".format(self.assay, self.enzyme)
+
 class AssayLOT(models.Model):
     assay = models.ForeignKey(AssayType, on_delete=models.CASCADE)
     date_order = models.DateTimeField('date ordered')
@@ -93,8 +99,14 @@ class AssayLOT(models.Model):
     box_position = models.CharField(max_length=20)
     comment = models.CharField(max_length=500)
 
+    def __str__(self):
+        return self.lot
+
 class AssayPatient(models.Model):
     assay = models.ForeignKey(AssayType, on_delete=models.CASCADE)
     study_id = models.CharField(max_length=10)
     date_added = models.DateTimeField('date added', null=True)
     comment = models.CharField(max_length=500)
+
+    def __str__(self):
+        return "{0}_{1}".format(self.assay, self.study_id)
