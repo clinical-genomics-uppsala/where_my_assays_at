@@ -19,9 +19,9 @@ so:
 
 ```
 docker run -d \
-	--name dev-postgres \
-	-e POSTGRES_PASSWORD=notsosecret \
-	-v /Path/to/repo/db:/var/lib/postgresql/data \
+  --name dev-postgres \
+  -e POSTGRES_PASSWORD=notsosecret \
+  -v /Path/to/repo/db:/var/lib/postgresql/data \
   -p 5432:5432 \
   postgres
 ```
