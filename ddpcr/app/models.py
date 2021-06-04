@@ -7,27 +7,7 @@ from django.urls import reverse
 
 from django.db import models
 from django.utils import timezone
-#
-# class Question(models.Model):
-#     question_text = models.CharField(max_length=200)
-#     pub_date = models.DateTimeField('date published')
-#     def __str__(self):
-#         return self.question_text
-#     def was_published_recently(self):
-#         now = timezone.now()
-#         return now - datetime.timedelta(days=1) <= self.pub_date <= now
-#     was_published_recently.admin_order_field = 'pub_date'
-#     was_published_recently.boolean = True
-#     was_published_recently.short_description = 'Published recently?'
-#
-# class Choice(models.Model):
-#     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-#     choice_text = models.CharField(max_length=200)
-#     votes = models.IntegerField(default=0)
-#     def __str__(self):
-#         return self.choice_text
-    # def was_published_recently(self):
-        # return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
+
 # Create your models here.
 
 class Enzyme(models.Model): #Borde fixas bättre med enzymnamn tillagda efter
@@ -168,7 +148,7 @@ class AssayLOT(models.Model): #Add validators for dates not to be out of order
 
     class Meta:
         ordering = ['assay','date_activated'] #Status instead?
-        permissions = (("can_update", "Update assay lot"),)
+        permissions = (("can_update", "Update assay lot"),) # Kommer inte ihag???
 
     def __str__(self): #borde kanske vara f'{self.assay} - {self.lot}'?
         return self.lot
@@ -183,6 +163,9 @@ class AssayPatient(models.Model):
     study_id = models.CharField(max_length=10)
     date_added = models.DateTimeField('date added', null=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )]) #bara DateField?
     comment = models.CharField(max_length=500, null=True, blank=True)
+
+    class Meta:
+        ordering = ['date_added']
 
     def __str__(self):
         return "{0}_{1}".format(self.assay, self.study_id)

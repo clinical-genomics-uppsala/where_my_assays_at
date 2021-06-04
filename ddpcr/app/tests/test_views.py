@@ -12,10 +12,10 @@ class AssayTypeViewTest(TestCase):
     def setUpTestData(cls):
         # Create two users
         test_user1 = User.objects.create_user(username='testuser1', password='1X<ISRUkw+tuK')
-        test_user2 = User.objects.create_user(username='testuser2', password='2HJ1vRV0Z&3iD')
+        # test_user2 = User.objects.create_user(username='testuser2', password='2HJ1vRV0Z&3iD') # incase of different kinds of users
 
         test_user1.save()
-        test_user2.save()
+        # test_user2.save()
         #Set up number of AssayTypes to test paginate
         number_of_assayTypes = 13
 
@@ -67,8 +67,9 @@ class AssayTypeViewTest(TestCase):
     #borde det vara tester for detail, create, update och delete ocksa?
 
 # DetailView
+#Borde man testa att alla lots displays? How?
     def test_redirect_if_not_logged_in_assayDetail(self):
-        pk=3
+        pk=3 #Gar nog att losa snyggare?
         response = self.client.get(reverse('assayType-detail', args=[pk]))
         self.assertRedirects(response, '/accounts/login/?next=/app/assay/'+str(pk)+'/')
 
@@ -111,7 +112,7 @@ class AssayTypeViewTest(TestCase):
         response = self.client.get(reverse('assayType-create'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/assaytype_form.html')
-        
+
 # UpdateView
     def test_redirect_if_not_logged_in_assayUpdate(self):
         pk = 3
@@ -162,116 +163,308 @@ class AssayTypeViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/assaytype_confirm_delete.html')
 
-# class AssayLotUpdateFormTest(TestCase):
-#     @classmethod
-#     def setUpTestData(cls):
-#         # Create two users
-#         test_user1 = User.objects.create_user(username='testuser1', password='1X<ISRUkw+tuK')
-#         test_user2 = User.objects.create_user(username='testuser2', password='2HJ1vRV0Z&3iD')
-#
-#         test_user1.save()
-#         test_user2.save()
-#         #Set up number of AssayTypes to test paginate
-#         number_of_assayLots = 13
-#         assay = AssayType.objects.create(assay_id = 'Test42', gene = 'TP53', ref_build = 'hg19', chromosome = '17', status = 4)
-#
-#         for assayLot_id in range(number_of_assayLots):
-#             AssayLOT.objects.create(assay = assay, date_order=timezone.now() + timedelta(days=1),
-#                                         date_scanned = timezone.now() + timedelta(days = 1), lot = f'Test{assayLot_id}',
-#                                         date_validated = timezone.now() + timedelta(days = 1),
-#                                         date_activated = timezone.now() + timedelta(days = 1), volume_low = False,
-#                                         date_inactivated = timezone.now() + timedelta(days = 1), status = 'ordered',
-#             )
-#
-#         # def test_redirect_if_not_logged_in(self):
-#         #     response = self.client.get(reverse('my-borrowed'))
-#         #     self.assertRedirects(response, '/accounts/login/?next=/catalog/mybooks/')
-#
-#     def test_view_url_exists_at_desired_location(self):
-#         login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
-#         response = self.client.get('/app/lots/')
-#         self.assertEqual(response.status_code, 200)
-#
-#     def test_view_url_accessible_by_name(self):
-#         login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
-#         response = self.client.get(reverse('assayLot'))
-#         self.assertEqual(response.status_code, 200)
-#
-#
-#     def test_view_uses_correct_template(self):
-#         login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
-#         response = self.client.get(reverse('assayLot'))
-#         self.assertEqual(response.status_code, 200)
-#         self.assertTemplateUsed(response, 'app/assaylot_list.html')
-#
-#     def test_pagination_is_ten(self):
-#         login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
-#         response = self.client.get(reverse('assayLot'))
-#         self.assertEqual(response.status_code, 200)
-#         self.assertTrue('is_paginated' in response.context)
-#         self.assertTrue(response.context['is_paginated'] == True)
-#         self.assertEqual(len(response.context['assaylot_list']), 10) #html-file
-#
-#     def test_lists_all_assayLot(self):
-#         # Get second page and confirm it has (exactly) remaining 3 items
-#         login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
-#         response = self.client.get(reverse('assayLot')+'?page=2')
-#         self.assertEqual(response.status_code, 200)
-#         self.assertTrue('is_paginated' in response.context)
-#         self.assertTrue(response.context['is_paginated'] == True)
-#         self.assertEqual(len(response.context['assaylot_list']), 3)
-#
-# class AssayPatientUpdateFormTest(TestCase):
-#     @classmethod
-#     def setUpTestData(cls):
-#         # Create two users
-#         test_user1 = User.objects.create_user(username='testuser1', password='1X<ISRUkw+tuK')
-#         test_user2 = User.objects.create_user(username='testuser2', password='2HJ1vRV0Z&3iD')
-#
-#         test_user1.save()
-#         test_user2.save()
-#         #Set up number of AssayTypes to test paginate
-#         number_of_assayPatients = 13
-#         assay = AssayType.objects.create(assay_id = 'Test42', gene = 'TP53', ref_build = 'hg19', chromosome = '17', status = 4)
-#
-#         for assayPatient_id in range(number_of_assayPatients):
-#             AssayPatient.objects.create(study_id = f'Test{assayPatient_id}', assay = assay, date_added = timezone.now() + timedelta(days = 1) )
-#
+class AssayLotUpdateFormTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Create two users
+        test_user1 = User.objects.create_user(username='testuser1', password='1X<ISRUkw+tuK')
+        # test_user2 = User.objects.create_user(username='testuser2', password='2HJ1vRV0Z&3iD')
 
-    # def test_redirect_if_not_logged_in(self):
-    #     response = self.client.get(reverse('my-borrowed'))
-    # #     self.assertRedirects(response, '/accounts/login/?next=/catalog/mybooks/')
-    #
-    # def test_view_url_exists_at_desired_location(self):
-    #     login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
-    #     response = self.client.get('/app/patients/')
-    #     self.assertEqual(response.status_code, 200)
-    #
-    # def test_view_url_accessible_by_name(self):
-    #     login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
-    #     response = self.client.get(reverse('assayPatient'))
-    #     self.assertEqual(response.status_code, 200)
-    #
-    #
-    # def test_view_uses_correct_template(self):
-    #     login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
-    #     response = self.client.get(reverse('assayPatient'))
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTemplateUsed(response, 'app/assaypatient_list.html')
-    #
-    # def test_pagination_is_ten(self):
-    #     login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
-    #     response = self.client.get(reverse('assayPatient'))
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTrue('is_paginated' in response.context)
-    #     self.assertTrue(response.context['is_paginated'] == True)
-    #     self.assertEqual(len(response.context['assaypatient_list']), 10) #html-file
-    #
-    # def test_lists_all_assayPatient(self):
-    #     # Get second page and confirm it has (exactly) remaining 3 items
-    #     login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
-    #     response = self.client.get(reverse('assayPatient')+'?page=2')
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTrue('is_paginated' in response.context)
-    #     self.assertTrue(response.context['is_paginated'] == True)
-    #     self.assertEqual(len(response.context['assaypatient_list']), 3)
+        test_user1.save()
+        # test_user2.save()
+        #Set up number of AssayTypes to test paginate
+        number_of_assayLots = 13
+        assay = AssayType.objects.create(assay_id = 'Test42', gene = 'TP53', ref_build = 'hg19', chromosome = '17', status = 4)
+
+        for assayLot_id in range(number_of_assayLots):
+            AssayLOT.objects.create(assay = assay, date_order=timezone.now() + timedelta(days=1),
+                                        date_scanned = timezone.now() + timedelta(days = 1), lot = f'Test{assayLot_id}',
+                                        date_validated = timezone.now() + timedelta(days = 1),
+                                        date_activated = timezone.now() + timedelta(days = 1), volume_low = False,
+                                        date_inactivated = timezone.now() + timedelta(days = 1), status = 'ordered',
+            )
+
+# Listview
+    def test_redirect_if_not_logged_in_assayLotList(self):
+        response = self.client.get(reverse('assayLot'))
+        self.assertRedirects(response, '/accounts/login/?next=/app/lots/')
+
+    def test_view_url_exists_at_desired_location_assayLotList(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get('/app/lots/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_assayLotList(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayLot'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template_assayLotList(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayLot'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/assaylot_list.html')
+
+    def test_pagination_is_ten_assayLotList(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayLot'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('is_paginated' in response.context)
+        self.assertTrue(response.context['is_paginated'] == True)
+        self.assertEqual(len(response.context['assaylot_list']), 10) #html-file
+
+    def test_lists_all_assayLotType(self):
+        # Get second page and confirm it has (exactly) remaining 3 items
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayLot')+'?page=2')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('is_paginated' in response.context)
+        self.assertTrue(response.context['is_paginated'] == True)
+        self.assertEqual(len(response.context['assaylot_list']), 3)
+
+# DetailView
+    def test_redirect_if_not_logged_in_assayLotDetail(self):
+        pk=3 #Gar nog att losa snyggare?
+        response = self.client.get(reverse('assayLot-detail', args=[pk]))
+        self.assertRedirects(response, '/accounts/login/?next=/app/lots/'+str(pk)+'/')
+
+    def test_view_url_exists_at_desired_location_assayLotDetail(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get('/app/lots/3/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_assayLotDetail(self):
+        pk=3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayLot-detail', args=[pk]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template_assayLotDetail(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayLot-detail', args=[pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/assaylot_detail.html')
+
+# CreateView
+    def test_redirect_if_not_logged_in_assayLotCreate(self):
+        response = self.client.get(reverse('assayLot-create'))
+        self.assertRedirects(response, '/accounts/login/?next=/app/lots/create/')
+
+    def test_view_url_exists_at_desired_location_assayLotCreate(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get('/app/lots/create/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_assayLotCreate(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayLot-create'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template_assayLotCreate(self): #Kanske inte ens ska testas? Eller? "ndra om delar upp create och update"
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayLot-create'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/assaylot_form.html')
+
+# UpdateView
+    def test_redirect_if_not_logged_in_assayLotUpdate(self):
+        pk = 3
+        response = self.client.get(reverse('assayLot-update', args = [pk]))
+        self.assertRedirects(response, '/accounts/login/?next=/app/lots/'+str(pk)+'/update/')
+
+    def test_view_url_exists_at_desired_location_assayLotUpdate(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get('/app/lots/'+str(pk)+'/update/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_assayLotUpdate(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayLot-update', args = [pk]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template_assayLotUpdate(self): #Kanske inte ens ska testas? Eller? "ndra om delar upp create och update"
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayLot-update', args = [pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/assaylot_form.html')
+
+# DeleteView
+    def test_redirect_if_not_logged_in_assayLotDelete(self):
+        pk = 3
+        response = self.client.get(reverse('assayLot-delete', args = [pk]))
+        self.assertRedirects(response, '/accounts/login/?next=/app/lots/'+str(pk)+'/delete/')
+
+    def test_view_url_exists_at_desired_location_assayLotDelete(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get('/app/lots/'+str(pk)+'/delete/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_assayLotDelete(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayLot-delete', args = [pk]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template_assayLotDelete(self): #Kanske inte ens ska testas? Eller? "ndra om delar upp create och update"
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayLot-delete', args = [pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/assaylot_confirm_delete.html')
+
+
+class AssayPatientUpdateFormTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Create two users
+        test_user1 = User.objects.create_user(username='testuser1', password='1X<ISRUkw+tuK')
+        # test_user2 = User.objects.create_user(username='testuser2', password='2HJ1vRV0Z&3iD')
+
+        test_user1.save()
+        # test_user2.save()
+        #Set up number of AssayTypes to test paginate
+        number_of_assayPatients = 13
+        assay = AssayType.objects.create(assay_id = 'Test42', gene = 'TP53', ref_build = 'hg19', chromosome = '17', status = 4)
+
+        for assayPatient_id in range(number_of_assayPatients):
+            AssayPatient.objects.create(study_id = f'Test{assayPatient_id}', assay = assay, date_added = timezone.now() + timedelta(days = 1) )
+
+# Listview
+    def test_redirect_if_not_logged_in_assayPatientList(self):
+        response = self.client.get(reverse('assayPatient'))
+        self.assertRedirects(response, '/accounts/login/?next=/app/patients/')
+
+    def test_view_url_exists_at_desired_location_assayPatientList(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get('/app/patients/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_assayPatientList(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayPatient'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template_assayPatientList(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayPatient'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/assaypatient_list.html')
+
+    def test_pagination_is_ten_assayPatientList(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayPatient'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('is_paginated' in response.context)
+        self.assertTrue(response.context['is_paginated'] == True)
+        self.assertEqual(len(response.context['assaypatient_list']), 10) #html-file
+
+    def test_lists_all_assayPatientType(self): # Waring if class Meta ordering not activated
+        # Get second page and confirm it has (exactly) remaining 3 items
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayPatient')+'?page=2')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('is_paginated' in response.context)
+        self.assertTrue(response.context['is_paginated'] == True)
+        self.assertEqual(len(response.context['assaypatient_list']), 3)
+
+# DetailView
+    def test_redirect_if_not_logged_in_assayPatientDetail(self):
+        pk=3 #Gar nog att losa snyggare?
+        response = self.client.get(reverse('assayPatient-detail', args=[pk]))
+        self.assertRedirects(response, '/accounts/login/?next=/app/patients/'+str(pk)+'/')
+
+    def test_view_url_exists_at_desired_location_assayPatientDetail(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get('/app/patients/3/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_assayPatientDetail(self):
+        pk=3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayPatient-detail', args=[pk]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template_assayPatientDetail(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayPatient-detail', args=[pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/assaypatient_detail.html')
+
+# CreateView
+    def test_redirect_if_not_logged_in_assayPatientCreate(self):
+        response = self.client.get(reverse('assayPatient-create'))
+        self.assertRedirects(response, '/accounts/login/?next=/app/patients/create/')
+
+    def test_view_url_exists_at_desired_location_assayPatientCreate(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get('/app/patients/create/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_assayPatientCreate(self):
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayPatient-create'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template_assayPatientCreate(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayPatient-create'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/assaypatient_form.html')
+
+# UpdateView
+    def test_redirect_if_not_logged_in_assayPatientUpdate(self):
+        pk = 3
+        response = self.client.get(reverse('assayPatient-update', args = [pk]))
+        self.assertRedirects(response, '/accounts/login/?next=/app/patients/'+str(pk)+'/update/')
+
+    def test_view_url_exists_at_desired_location_assayPatientUpdate(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get('/app/patients/'+str(pk)+'/update/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_assayPatientUpdate(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayPatient-update', args = [pk]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template_assayPatientUpdate(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayPatient-update', args = [pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/assaypatient_form.html')
+
+# DeleteView
+    def test_redirect_if_not_logged_in_assayPatientDelete(self):
+        pk = 3
+        response = self.client.get(reverse('assayPatient-delete', args = [pk]))
+        self.assertRedirects(response, '/accounts/login/?next=/app/patients/'+str(pk)+'/delete/')
+
+    def test_view_url_exists_at_desired_location_assayPatientDelete(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get('/app/patients/'+str(pk)+'/delete/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_assayPatientDelete(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayPatient-delete', args = [pk]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template_assayPatientDelete(self):
+        pk = 3
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse('assayPatient-delete', args = [pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/assaypatient_confirm_delete.html')

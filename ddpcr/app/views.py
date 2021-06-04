@@ -73,47 +73,47 @@ class AssayTypeDelete(LoginRequiredMixin, DeleteView):
 
 # Assay lot
 
-class AssayLotView(LoginRequiredMixin,generic.ListView):
+class AssayLotView(LoginRequiredMixin, generic.ListView):
     model = AssayLOT
     paginate_by = 10
     context_object_name = 'assaylot_list'
     queryset = AssayLOT.objects.all() # Eller ska vi filtrera pa bara activated etc?
     template_name = 'app/assaylot_list.html'
 
-class AssayLotDetailView(LoginRequiredMixin,generic.DetailView):
+class AssayLotDetailView(LoginRequiredMixin, generic.DetailView):
     model = AssayLOT
 
-class AssayLotCreate(CreateView):
+class AssayLotCreate(LoginRequiredMixin, CreateView):
     model = AssayLOT
     # form_class = AssayLotCreateForm
     fields = '__all__' #not recommended should be explicit
 
-class AssayLotUpdate(UpdateView):
+class AssayLotUpdate(LoginRequiredMixin, UpdateView):
     model = AssayLOT
     form_class = AssayLotUpdateForm
     # fields = '__all__' #not recommended should be explicit
 
-class AssayLotDelete(DeleteView):
+class AssayLotDelete(LoginRequiredMixin, DeleteView):
     model = AssayLOT
     success_url = reverse_lazy('assaylot')
 
 # Assay Patient
-class AssayPatientView(LoginRequiredMixin,generic.ListView):
+class AssayPatientView(LoginRequiredMixin, generic.ListView):
     model = AssayPatient
     paginate_by = 10
 
-class AssayPatientDetailView(LoginRequiredMixin,generic.DetailView):
+class AssayPatientDetailView(LoginRequiredMixin, generic.DetailView):
     model = AssayPatient
 
-class AssayPatientCreate(CreateView):
-    model = AssayPatient
-    fields = '__all__' #not recommended should be explicit
-
-class AssayPatientUpdate(UpdateView):
+class AssayPatientCreate(LoginRequiredMixin, CreateView):
     model = AssayPatient
     fields = '__all__' #not recommended should be explicit
 
-class AssayPatientDelete(DeleteView):
+class AssayPatientUpdate(LoginRequiredMixin, UpdateView):
+    model = AssayPatient
+    fields = '__all__' #not recommended should be explicit
+
+class AssayPatientDelete(LoginRequiredMixin, DeleteView):
     model = AssayPatient
     success_url = reverse_lazy('assayPatient')
 #
