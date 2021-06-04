@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "app/base_generic.html" %}
+{% block content %}
+<h1>Assay ID: {{ assaytype.assay_id }}</h1>
+
+  <p><strong>Assay id sec:</strong> {{assaytype.assay_id_sec }}</p> <!-- <a href="">{{ book.author }}</a></p> <!-- author detail link not yet defined -->
+  <p><strong>Gene:</strong> {{ assaytype.gene }}</p>
+  <p><strong>Sequence:</strong> {{ assaytype.sequence }}</p>
+  <p><strong>Ref build:</strong> {{ assaytype.ref_build }}</p>
+  <p><strong>Genomic position:</strong> {{ assaytype.chromosome }}:{{ assaytype.position_from }}-{{assaytype.position_to}}</p>
+  <p><strong>transcript:</strong> {{ assaytype.transcript }}</p>
+  <p><strong>cDNA:</strong> {{ assaytype.cdna}}</p>
+  <p><strong>Protein:</strong> {{ assaytype.protein }}</p>
+  <p><strong>Enzymes:</strong> {{ assaytype.enzymes.all|join:", " }}</p>
+  <p><strong>Temperature:</strong> {{ assaytype.temperature }}</p>
+  <p><strong>Status:</strong> {{ assaytype.status }}</p>
+  <p><strong>Comment:</strong> {{ assaytype.comment }}</p>
+
+  Add buttons for new, update and delete
+
+  <div style="margin-left:20px;margin-top:20px">
+    <h2>Assay lots</h2>
+    <hr>
+    {% for lot in assaytype.assaylot_set.all %}
+      <!-- Funkar inte riktigt, blir ordered efter datum? Och ser ej farger -->
+      <p class="{% if lot.status == 'activated' %}text-success{% elif lot.status == 'inactivated' %}text-danger{% else %}text-warning{% endif %}">
+        {{ lot.get_status_display }}
+      </p>
+      <!-- {% if copy.status != 'a' %}
+        <p><strong>Due to be returned:</strong> {{ copy.due_back }}</p>
+      {% endif %} -->
+      <p><strong>Lot ID:</strong> <a href="{{ lot.get_absolute_url }}">{{ lot.lot }}</a></p>
+      <p class="text-muted"><strong>Freezer:</strong> {{ lot.freezer_id }}</p>
+      <p class="text-muted"><strong>Box position:</strong> {{ lot.box_position }}</p>
+      <hr>
+    {% endfor %}
+    <br>
+    <h2>Assay Patients </h2>
+    <hr>
+    {% if assaytype.assaypatient_set.all %}
+      {% for patient in assaytype.assaypatient_set.all %}
+        <p><strong>Study ID: </strong> <a href="{{ patient.get_absolute_url }}">{{ patient.study_id }}</a></p>
+        <p><strong>Assay: </strong>{{ patient.assay }}</p>
+        <p><strong>Date Added: </strong>{{ patient.date_added }}</p>
+        <p class="text-muted"><strong>Comment: </strong>{{ patient.comment }}</p>
+        <hr>
+      {% endfor %}
+    {% else %}
+      <p> There are no patients associated with assay {{ assaytype.assay_id }}. </p>
+    {% endif %}
+  </div>
+{% endblock %}

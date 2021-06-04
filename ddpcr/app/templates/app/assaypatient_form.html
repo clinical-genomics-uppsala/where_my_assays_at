@@ -1,0 +1,13 @@
+{% extends "app/base_generic.html" %}
+
+{% block content %}
+  <form action="" method="post">
+    {% csrf_token %}
+    <h1>Update/Add assay patient</h1>
+    Dela upp till en _create_form och en _update_form? Isf lagga till template_name_suffix = '_update_form' i view
+    <table>
+    {{ form.as_table }}
+    </table>
+    <input type="submit" value="Submit">
+  </form>
+{% endblock %}

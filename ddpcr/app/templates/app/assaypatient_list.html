@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "app/base_generic.html" %}
+{% block content %}
+<h1>Assay Patients</h1>
+{% if assaypatient_list %}
+<ul>
+  {% for patient in assaypatient_list %}
+    <li>
+      <a href="{{ patient.get_absolute_url }}">{{ patient.study_id }}</a> ({{ patient.assay }}, {{ patient.date_added }})
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+  <p>There are no patients in the database.</p>
+{% endif %}
+{% endblock %}
+</html>

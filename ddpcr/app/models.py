@@ -1,8 +1,71 @@
 from django.utils.translation import gettext_lazy as _
 from django.db import models
+from django.core.validators import MaxValueValidator
 
+from datetime import date
+from django.urls import reverse
+
+from django.db import models
+from django.utils import timezone
+#
+# class Question(models.Model):
+#     question_text = models.CharField(max_length=200)
+#     pub_date = models.DateTimeField('date published')
+#     def __str__(self):
+#         return self.question_text
+#     def was_published_recently(self):
+#         now = timezone.now()
+#         return now - datetime.timedelta(days=1) <= self.pub_date <= now
+#     was_published_recently.admin_order_field = 'pub_date'
+#     was_published_recently.boolean = True
+#     was_published_recently.short_description = 'Published recently?'
+#
+# class Choice(models.Model):
+#     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+#     choice_text = models.CharField(max_length=200)
+#     votes = models.IntegerField(default=0)
+#     def __str__(self):
+#         return self.choice_text
+    # def was_published_recently(self):
+        # return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
 # Create your models here.
 
+class Enzyme(models.Model): #Borde fixas bättre med enzymnamn tillagda efter
+    """ Model representing enzymes in assays """
+    class RestrictionEnzymes(models.TextChoices):
+            AluI = 'A1'
+            CviQI = 'C1'
+            DpnII = 'D2'
+            HaeIII = 'Ha3'
+            HindIII = 'Hi3'
+            MseI = 'Mse1'
+            MspI = 'Msp1'
+            SmaI = 'S1'
+    name = models.CharField(max_length=4, choices=RestrictionEnzymes.choices)
+
+    def __str__(self):
+        """ String for representing the Model objext. """
+        return self.name
+# class Enzyme(models.Model):
+#
+#     class RestrictionEnzymes(models.TextChoices):
+#         AluI = 'A1'
+#         CviQI = 'C1'
+#         DpnII = 'D2'
+#         HaeIII = 'Ha3'
+#         HindIII = 'Hi3'
+#         MseI = 'Mse1'
+#         MspI = 'Msp1'
+#         SmaI = 'S1'
+#
+#     assay = models.ForeignKey(AssayType, on_delete=models.CASCADE)
+#     enzyme = models.CharField(
+#         max_length=4,
+#         choices=RestrictionEnzymes.choices
+#     )
+#
+#     def __str__(self):
+#         return "{0}_{1}".format(self.assay, self.enzyme)
 class AssayType(models.Model):
 
     class GenomeBuildVersion(models.TextChoices):
@@ -43,9 +106,9 @@ class AssayType(models.Model):
         OK = 4, _('Ok')
 
     assay_id = models.CharField(max_length=100)
-    assay_id_sec = models.CharField(max_length=100)
+    assay_id_sec = models.CharField(max_length=100, null=True, blank=True)
     gene = models.CharField(max_length=100)
-    sequence = models.CharField(max_length=500)
+    sequence = models.CharField(max_length=500, null=True, blank=True)
     ref_build = models.CharField(
         max_length=4,
         choices=GenomeBuildVersion.choices,
@@ -57,56 +120,73 @@ class AssayType(models.Model):
     transcript = models.CharField(max_length=100)
     cdna = models.CharField(max_length=100)
     protein = models.CharField(max_length=100)
-    temperature = models.IntegerField(default=55)
+    enzyme = models.ManyToManyField(Enzyme, help_text='Select enzymes for this assay.')
+
+    def display_enzymes(self):
+        """ Create string to display first two enzymes in admin.py """
+        return ', '.join(enzyme.name for enzyme in self.enzyme.all()[:3])
+
+    display_enzymes.short_description = 'Enzymes'
+
+    temperature = models.IntegerField(default=55, null=True, blank=True)
     status = models.IntegerField(choices=Status.choices)
-    comment = models.CharField(max_length=500)
+    comment = models.CharField(max_length=500, null=True, blank=True)
+
+    class Meta:
+        ordering = ['chromosome','position_from']
 
     def __str__(self):
         return self.assay_id
+ #Add method that returns the url to access a particular instance on my model name?
+    def get_absolute_url(self):
+        """Returns the url to access a particular instance of the model."""
+        return reverse('assayType-detail', args=[str(self.id)])
 
-class Enzyme(models.Model):
 
-    class RestrictionEnzymes(models.TextChoices):
-        AluI = 'A1'
-        CviQI = 'C1'
-        DpnII = 'D2'
-        HaeIII = 'Ha3'
-        HindIII = 'Hi3'
-        MseI = 'Mse1'
-        MspI = 'Msp1'
-        SmaI = 'S1'
+class AssayLOT(models.Model): #Add validators for dates not to be out of order
+
+    class Status(models.TextChoices): #Varfor annorlunda an AssayType Status?
+        ORDERED = 'ordered', _('Ordered')
+        SCANNED = 'scanned', _('Scanned')
+        VALIDATED = 'validated', _('Validated')
+        ACTIVATED = 'activated', _('Activated')
+        INACTIVATED = 'inactivated', _('Inactivated')
 
     assay = models.ForeignKey(AssayType, on_delete=models.CASCADE)
-    enzyme = models.CharField(
-        max_length=4,
-        choices=RestrictionEnzymes.choices
-    )
-
-    def __str__(self):
-        return "{0}_{1}".format(self.assay, self.enzyme)
-
-class AssayLOT(models.Model):
-    assay = models.ForeignKey(AssayType, on_delete=models.CASCADE)
-    date_order = models.DateTimeField('date ordered')
-    date_scanned = models.DateTimeField('date scanned', null=True)
-    lot = models.CharField(max_length=10)
-    date_validated = models.DateTimeField('date validated', null=True)
-    test_id = models.CharField(max_length=20)
-    date_activated = models.DateTimeField('date activated', null=True)
+    date_order = models.DateTimeField('date ordered', validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )]) #bara DateField?
+    date_scanned = models.DateTimeField('date scanned',null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now() )]) #bara DateField?
+    lot = models.CharField(max_length=10, unique=True)
+    date_validated = models.DateTimeField('date validated', null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )]) #bara DateField?
+    test_id = models.CharField(max_length=20,null=True, blank=True)
+    date_activated = models.DateTimeField('date activated', null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )]) #bara DateField?
     volume_low = models.BooleanField(default=False)
-    date_inactivated = models.DateTimeField('date inactivated', null=True)
-    freezer_id = models.CharField(max_length=10)
-    box_position = models.CharField(max_length=20)
-    comment = models.CharField(max_length=500)
+    date_inactivated = models.DateTimeField('date inactivated', null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )]) #bara DateField?
+    freezer_id = models.CharField(max_length=10, null=True, blank=True)
+    box_position = models.CharField(max_length=20, null=True, blank=True)
+    comment = models.CharField(max_length=500, null=True, blank=True)
+    status = models.CharField(max_length=15,choices=Status.choices, default=Status.ORDERED)
 
-    def __str__(self):
+    class Meta:
+        ordering = ['assay','date_activated'] #Status instead?
+        permissions = (("can_update", "Update assay lot"),)
+
+    def __str__(self): #borde kanske vara f'{self.assay} - {self.lot}'?
         return self.lot
+
+    def get_absolute_url(self):
+        """Returns the url to access a particular instance of the model."""
+        return reverse('assayLot-detail', args=[str(self.id)])
+
 
 class AssayPatient(models.Model):
     assay = models.ForeignKey(AssayType, on_delete=models.CASCADE)
     study_id = models.CharField(max_length=10)
-    date_added = models.DateTimeField('date added', null=True)
-    comment = models.CharField(max_length=500)
+    date_added = models.DateTimeField('date added', null=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )]) #bara DateField?
+    comment = models.CharField(max_length=500, null=True, blank=True)
 
     def __str__(self):
         return "{0}_{1}".format(self.assay, self.study_id)
+
+    def get_absolute_url(self):
+        """Returns the url to access a particular instance of the model."""
+        return reverse('assayPatient-detail', args=[str(self.id)])

@@ -1,0 +1,16 @@
+{% extends "app/base_generic.html" %}
+
+{% block content %}
+
+<h1>Delete Assay Type</h1>
+
+<p>Are you sure you want to delete the assay: {{ assaytype }}?</p>
+Mera sammanfattning?
+Cancel button?
+
+<form action="" method="POST">
+  {% csrf_token %}
+  <input type="submit" value="Yes, delete.">
+</form>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "app/base_generic.html" %}
+{% block content %}
+<h1>Assay lot number: {{ assaylot.lot }}</h1>
+
+  <p><strong>Assay:</strong> <a href="{% url 'assayType-detail' assaylot.assay.pk %}"> {{ assaylot.assay }}</a></p>
+  <p><strong>Status:</strong> {{ assaylot.status }}</p>
+  <p><strong>Date Ordered:</strong> {{ assaylot.date_order }}</p>
+  <p><strong>Date Scanned:</strong> {{ assaylot.date_scanned }}</p>
+  <p><strong>Date Validated:</strong> {{ assaylot.date_validated }}</p>
+  <p><strong>Test ID:</strong> {{ assaylot.test_id }}</p>
+  <p><strong>Date Activated:</strong> {{ assaylot.date_activated}}</p>
+  <p><strong>Volume low:</strong> {{ assaylot.volume_low }}</p>
+  <p><strong>Date Inactivated:</strong> {{ assaylot.date_inactivated }}</p>
+  <p><strong>Freezer ID:</strong> {{ assaylot.freezer_id }} <strong>Box Position:</strong> {{ assaylot.box_position}}</p>
+  <p><strong>Comment:</strong> {{ assaylot.comment }}</p>
+
+<a href="{% url 'assayLot-update' assaylot.pk %}">Update</a>
+
+<!-- Add view of all patients using same assay after date activated? -->
+  <div style="margin-left:20px;margin-top:20px">
+    <h2>Study IDs</h2>
+    <hr>
+    How do we do a filter with same assay and assaylot.date_activated < patient.date_added > assaylot.date_inactivated?
+    Gar det ens?
+<!-- .filter(assaypatient.assay == assaylot.assay)&& (assaypatient.date_added > assaylot.date_activated && assaypatient.date_added < assaylot.date_inactivated )) %} -->
+    <!-- {% if assaytype.assaypatient_set.all %}
+      {% for patient in assaytype.assaypatient_set.all %}
+        <p><strong>Study ID: </strong>{{ patient.study_id }}</p>
+        <p><strong>Assay: </strong>{{ patient.assay }}</p>
+        <p><strong>Date Added: </strong>{{ patient.date_added }}</p>
+        <p class="text-muted"><strong>Comment: </strong>{{ patient.comment }}</p>
+        <hr>
+      {% endfor %}
+    {% else %}
+      <p> There are no patients associated with the activation time for the lot {{ assaylot.lot }}. </p>
+    {% endif %}
+     -->
+  </div>
+{% endblock %}
