@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "app/base_generic.html" %}
+{% block content %}
+<h1>Assay List</h1>
+{% if assaytype_list %}
+<ul>
+  {% for assay in assaytype_list %}
+    <li>
+      <a href="{{ assay.get_absolute_url }}">{{ assay.assay_id }}</a> ({{ assay.transcript }}, {{ assay.gene }})
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+  <p>There are no assays in the database.</p>
+{% endif %}
+{% endblock %}
+</html>

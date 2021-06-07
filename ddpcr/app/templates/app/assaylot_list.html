@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "app/base_generic.html" %}
+{% block content %}
+<h1>Assay Lots</h1>
+{% if assaylot_list %}
+<ul>
+  {% for lot in assaylot_list %}
+    <li>
+      <a href="{{ lot.get_absolute_url }}">{{ lot.lot }}</a> ({{ lot.assay }}, {{ lot.status }})
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+  <p>There are no assay lots in the database.</p>
+{% endif %}
+{% endblock %}
+</html>

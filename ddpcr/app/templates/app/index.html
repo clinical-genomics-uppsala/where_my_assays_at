@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "app/base_generic.html" %}
+{% block content %}
+  <h1>DDPCR Database Home</h1>
+  <p>Welcome to Clinical Genomic Uppsala's DDPCR database!</p>
+  <h2>Dynamic content</h2>
+  <p>The database has the following number of records:</p>
+  <ul>
+    <li><strong>Assays:</strong> {{ num_assay }}</li>
+    <li><strong>Patients:</strong> {{ num_patient }}</li>
+    <!-- <li><strong>Copies available:</strong> {{ num_instances_available }}</li> -->
+    <!-- <li><strong>Authors:</strong> {{ num_authors }}</li> -->
+  </ul>
+  Lagga till plot over antal assay type, lot och patienter?
+
+  <p> You have visited this page {{ num_visits }} time{% if num_visits > 1 %}s{% endif %}.</p>
+{% endblock %}
+</html>

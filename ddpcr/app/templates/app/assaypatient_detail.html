@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends "app/base_generic.html" %}
+{% block content %}
+<h1>Study ID: {{ assaypatient.study_id }}</h1>
+  <p><strong>Assay:</strong> <a href="{% url 'assayType-detail' assaypatient.assay.pk %}"> {{ assaypatient.assay }}</a></p>
+  <p><strong>Date added:</strong> {{ assaypatient.date_added }}</p>
+  <p><strong>Comment:</strong> {{ assaypatient.comment }}</p>
+
+  Add buttons for new, update and delete
+{% endblock %}
