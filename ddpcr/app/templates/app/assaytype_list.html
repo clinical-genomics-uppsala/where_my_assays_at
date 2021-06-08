@@ -1,19 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 {% extends "app/base_generic.html" %}
+{% load bootstrap_icons %} <!-- Borde man inte kunna ladda det i base_generic, hur?? -->
+<!-- pip install django-bootstrap-icons -->
 {% block content %}
-<h1>Assay List<a href="{% url 'assayType-create' %}"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">New</span></button></a></h1>
+<h1>Assays<a href="{% url 'assayType-create' %}"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">New</span></button></a></h1>
 
 {% if assaytype_list %}
-<ul>
-  {% for assay in assaytype_list %}
-    <li>
-      <a href="{{ assay.get_absolute_url }}">{{ assay.assay_id }}</a> ({{ assay.transcript }}, {{ assay.gene }})
-    </li>
-  {% endfor %}
-</ul>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Assay ID</th>
+          <th>Gene</th>
+          <th>Transcript</th>
+          <th>Status</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for assay in assaytype_list %}
+        <tr>
+         <td><a href="{{ assay.get_absolute_url }}">{{ assay.assay_id }}</a></td>
+         <td>{{assay.gene}}</td>
+         <td>{{assay.transcript}}</td>
+         <td>{{assay.status}}</td>
+         <td><a href='{% url "assayType-update" assay.pk %}'>
+           <button type="button" class="btn btn-light">
+             {% bs_icon 'pencil-square' %}</button></a></td>
+         <td><a href='{% url "assayType-delete" assay.pk %}'>
+           <button type="button" class="btn btn-light " >
+             {% bs_icon 'trash' %}</button></a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% else %}
   <p>There are no assays in the database.</p>
 {% endif %}
+
+
 {% endblock %}
 </html>

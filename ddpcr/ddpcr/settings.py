@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_bootstrap_icons',
 ]
 
 MIDDLEWARE = [
@@ -130,6 +131,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# STATICFILES_DIR = ( #Om vi flyttar ut static dir till samma niva som manage.py for att anvanda i flera appar
+# os.path.join(BASE_DIR, 'static')
+# )
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = 'app/'
