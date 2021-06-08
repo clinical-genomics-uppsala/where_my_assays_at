@@ -2,7 +2,7 @@
 <html lang="en">
 {% extends "app/base_generic.html" %}
 {% block content %}
-<h1>Assay Lots</h1>
+<h1>Assay Lots<a href="{% url 'assayLot-create' %}"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">New</span></button></a></h1>
 {% if assaylot_list %}
 <ul>
   {% for lot in assaylot_list %}

@@ -2,7 +2,7 @@
 <html lang="en">
 {% extends "app/base_generic.html" %}
 {% block content %}
-<h1>Assay Patients</h1>
+<h1>Assay Patients<a href="{% url 'assayPatient-create' %}"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">New</span></button></a></h1>
 {% if assaypatient_list %}
 <ul>
   {% for patient in assaypatient_list %}

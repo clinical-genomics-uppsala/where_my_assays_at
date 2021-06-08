@@ -2,7 +2,8 @@
 <html lang="en">
 {% extends "app/base_generic.html" %}
 {% block content %}
-<h1>Assay List</h1>
+<h1>Assay List<a href="{% url 'assayType-create' %}"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">New</span></button></a></h1>
+
 {% if assaytype_list %}
 <ul>
   {% for assay in assaytype_list %}

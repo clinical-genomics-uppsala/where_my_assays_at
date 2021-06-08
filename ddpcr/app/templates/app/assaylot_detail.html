@@ -16,7 +16,8 @@
   <p><strong>Freezer ID:</strong> {{ assaylot.freezer_id }} <strong>Box Position:</strong> {{ assaylot.box_position}}</p>
   <p><strong>Comment:</strong> {{ assaylot.comment }}</p>
 
-<a href="{% url 'assayLot-update' assaylot.pk %}">Update</a>
+<a href="{% url 'assayLot-update' assaylot.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">Update record</span></button></a>
+<a href="{% url 'assayLot-delete' assaylot.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-danger text-light">Delete record</span></button></a>
 
 <!-- Add view of all patients using same assay after date activated? -->
   <div style="margin-left:20px;margin-top:20px">

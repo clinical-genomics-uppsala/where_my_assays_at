@@ -17,7 +17,8 @@
   <p><strong>Status:</strong> {{ assaytype.status }}</p>
   <p><strong>Comment:</strong> {{ assaytype.comment }}</p>
 
-  Add buttons for new, update and delete
+  <a href="{% url 'assayType-update' assaytype.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">Update record</span></button></a>
+  <a href="{% url 'assayType-delete' assaytype.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-danger text-light">Delete record</span></button></a>
 
   <div style="margin-left:20px;margin-top:20px">
     <h2>Assay lots</h2>
