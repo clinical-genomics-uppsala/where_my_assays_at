@@ -2,11 +2,12 @@
 import datetime
 # Create your views here.
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.utils import timezone
+from django.conf import settings
 
 from .models import AssayType, AssayLOT, AssayPatient, Enzyme
 
@@ -17,6 +18,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 
 
 def index(request):
+    if not request.user.is_authenticated:
+        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
     """ View function for home page """
     num_assay=AssayType.objects.all().count()
     num_patient=AssayPatient.objects.all().count()
