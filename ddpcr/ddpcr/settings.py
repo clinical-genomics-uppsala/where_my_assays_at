@@ -130,6 +130,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+STATIC_ROOT = '/static'
 STATIC_URL = '/static/'
 
 # STATICFILES_DIR = ( #Om vi flyttar ut static dir till samma niva som manage.py for att anvanda i flera appar
