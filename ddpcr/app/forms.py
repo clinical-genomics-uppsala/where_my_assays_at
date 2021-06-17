@@ -29,7 +29,7 @@ class AssayLotUpdateForm(ModelForm):
     #Should we start with just ValidationError if there is a date and not the corresponding status?
     class Meta:
         model = AssayLOT
-        fields = ['assay','date_order','date_scanned','lot','date_validated','test_id','date_activated','volume_low','date_inactivated','freezer_id','box_position','comment','status']
+        fields = ['assay','date_order','date_scanned','lot','date_validated','test_id','date_activated','volume_low','date_inactivated','fridge_id', 'box_id', 'box_position','comment']
 
     def clean(self):
         cleaned_data = super(AssayLotUpdateForm, self).clean()
