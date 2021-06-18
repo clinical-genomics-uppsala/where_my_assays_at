@@ -16,7 +16,7 @@
           <th>Transcript</th>
           <th>Status</th>
           <th>Edit</th>
-          <th>Delete</th>
+          <!-- <th>Delete</th> -->
         </tr>
       </thead>
       <tbody>
@@ -29,9 +29,9 @@
          <td><a href='{% url "assayType-update" assay.pk %}'>
            <button type="button" class="btn btn-light">
              {% bs_icon 'pencil-square' %}</button></a></td>
-         <td><a href='{% url "assayType-delete" assay.pk %}'>
+         <!-- <td><a href='{% url "assayType-delete" assay.pk %}'>
            <button type="button" class="btn btn-light " >
-             {% bs_icon 'trash' %}</button></a></td>
+             {% bs_icon 'trash' %}</button></a></td> -->
         </tr>
       {% endfor %}
       </tbody>

@@ -2,8 +2,9 @@
 <html lang="en">
 {% extends "app/base_generic.html" %}
 {% block content %}
-<h1>Assay ID: {{ assaytype.assay_id }}</h1>
-
+<div class="page-header">
+<h1>Assay ID: {{ assaytype.assay_id }}</h1><hr>
+</div>
   <p><strong>Assay id sec:</strong> {{assaytype.assay_id_sec }}</p> <!-- <a href="">{{ book.author }}</a></p> <!-- author detail link not yet defined -->
   <p><strong>Gene:</strong> {{ assaytype.gene }}</p>
   <p><strong>Sequence:</strong> {{ assaytype.sequence }}</p>
@@ -18,7 +19,7 @@
   <p><strong>Comment:</strong> {{ assaytype.comment }}</p>
 
   <a href="{% url 'assayType-update' assaytype.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">Update record</span></button></a>
-  <a href="{% url 'assayType-delete' assaytype.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-danger text-light">Delete record</span></button></a>
+  <!-- <a href="{% url 'assayType-delete' assaytype.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-danger text-light">Delete record</span></button></a> -->
 
   <div style="margin-left:20px;margin-top:20px">
     <h2>Assay lots</h2>
