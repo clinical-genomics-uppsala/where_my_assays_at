@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 
 from app.models import Enzyme, AssayType, AssayLOT, AssayPatient
-
+#Test index view?
+# redirect if not logged in, test num assays? num visits?
 class AssayTypeViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -64,7 +65,18 @@ class AssayTypeViewTest(TestCase):
         self.assertTrue('is_paginated' in response.context)
         self.assertTrue(response.context['is_paginated'] == True)
         self.assertEqual(len(response.context['assaytype_list']), 3)
-    #borde det vara tester for detail, create, update och delete ocksa?
+
+    def test_create_new_link(self): #kommer ju faila om vi byter design pa knappen, hur fixar man?
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse("assayType"))
+        self.assertContains(response, '<a href="%s"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">New</span></button></a>' % reverse("assayType-create"), html=True)
+
+    def test_update_button(self): #kommer ju faila om vi byter design pa knappen, hur fixar man?
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        pk=3
+        response = self.client.get(reverse("assayType"))
+        self.assertContains(response, '<a href="%s"><button type="button" class="btn btn-light ">{% bs_icon "pencil-square" %}</button></a>' % reverse("assayType-update", args=[pk]), html=True)
+
 
 # DetailView
 #Borde man testa att alla lots displays? How?
@@ -85,11 +97,23 @@ class AssayTypeViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_view_uses_correct_template_assayDetail(self):
-        pk = 3
+        pk=3
         login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
         response = self.client.get(reverse('assayType-detail', args=[pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/assaytype_detail.html')
+
+    def test_update_button(self): #kommer ju faila om vi byter design pa knappen, hur fixar man?
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        pk=3
+        response = self.client.get(reverse("assayType-detail", args=[pk]))
+        self.assertContains(response, '<a href="%s"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">Update record</span></button></a>' % reverse("assayType-update", args=[pk]), html=True)
+
+    # def test_delete_button(self): #kommer ju faila om vi byter design pa knappen, hur fixar man?
+    #     login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+    #     pk=3
+    #     response = self.client.get(reverse("assayType-detail", args=[pk]))
+    #     self.assertContains(response, '<a href="%s"><button type="button" class = "btn btn-default"><span class="badge bg-danger text-light">Delete record</span></button></a>' % reverse("assayType-delete", args=[pk]), html=True)
 
 # CreateView
     def test_redirect_if_not_logged_in_assayCreate(self):
@@ -222,6 +246,17 @@ class AssayLotUpdateFormTest(TestCase):
         self.assertTrue(response.context['is_paginated'] == True)
         self.assertEqual(len(response.context['assaylot_list']), 3)
 
+    def test_create_new_link(self): #kommer ju faila om vi byter design pa knappen, hur fixar man?
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse("assayLot"))
+        self.assertContains(response, '<a href="%s"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">New</span></button></a>' % reverse("assayLot-create"), html=True)
+
+    def test_update_button(self): #kommer ju faila om vi byter design pa knappen, hur fixar man?
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        pk=3
+        response = self.client.get(reverse("assayLot"))
+        self.assertContains(response, '<a href="%s"><button type="button" class="btn btn-light ">{% bs_icon "pencil-square" %}</button></a>' % reverse("assayLot-update", args=[pk]), html=True)
+
 # DetailView
     def test_redirect_if_not_logged_in_assayLotDetail(self):
         pk=3 #Gar nog att losa snyggare?
@@ -245,6 +280,19 @@ class AssayLotUpdateFormTest(TestCase):
         response = self.client.get(reverse('assayLot-detail', args=[pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/assaylot_detail.html')
+
+    def test_update_button(self): #kommer ju faila om vi byter design pa knappen, hur fixar man?
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        pk=3
+        response = self.client.get(reverse("assayLot-detail", args=[pk]))
+        self.assertContains(response, '<a href="%s"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">Update record</span></button></a>' % reverse("assayLot-update", args=[pk]), html=True)
+    #
+    # def test_delete_button(self): #kommer ju faila om vi byter design pa knappen, hur fixar man?
+    #     login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+    #     pk=3
+    #     response = self.client.get(reverse("assayLot-detail", args=[pk]))
+    #     self.assertContains(response, '<a href="%s"><button type="button" class = "btn btn-default"><span class="badge bg-danger text-light">Delete record</span></button></a>' % reverse("assayLot-delete", args=[pk]), html=True)
+
 
 # CreateView
     def test_redirect_if_not_logged_in_assayLotCreate(self):
@@ -373,6 +421,17 @@ class AssayPatientUpdateFormTest(TestCase):
         self.assertTrue(response.context['is_paginated'] == True)
         self.assertEqual(len(response.context['assaypatient_list']), 3)
 
+    def test_create_new_link(self): #kommer ju faila om vi byter design pa knappen, hur fixar man?
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        response = self.client.get(reverse("assayPatient"))
+        self.assertContains(response, '<a href="%s"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">New</span></button></a>' % reverse("assayPatient-create"), html=True)
+
+    def test_update_button(self): #kommer ju faila om vi byter design pa knappen, hur fixar man?
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        pk=3
+        response = self.client.get(reverse("assayPatient"))
+        self.assertContains(response, '<a href="%s"><button type="button" class="btn btn-light ">{% bs_icon "pencil-square" %}</button></a>' % reverse("assayPatient-update", args=[pk]), html=True)
+
 # DetailView
     def test_redirect_if_not_logged_in_assayPatientDetail(self):
         pk=3 #Gar nog att losa snyggare?
@@ -396,6 +455,19 @@ class AssayPatientUpdateFormTest(TestCase):
         response = self.client.get(reverse('assayPatient-detail', args=[pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/assaypatient_detail.html')
+
+    def test_update_button(self): #kommer ju faila om vi byter design pa knappen, hur fixar man?
+        login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+        pk=3
+        response = self.client.get(reverse("assayPatient-detail", args=[pk]))
+        self.assertContains(response, '<a href="%s"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">Update record</span></button></a>' % reverse("assayPatient-update", args=[pk]), html=True)
+
+    # def test_delete_button(self): #kommer ju faila om vi byter design pa knappen, hur fixar man?
+    #     login = self.client.login(username='testuser1', password='1X<ISRUkw+tuK')
+    #     pk=3
+    #     response = self.client.get(reverse("assayPatient-detail", args=[pk]))
+    #     self.assertContains(response, '<a href="%s"><button type="button" class = "btn btn-default"><span class="badge bg-danger text-light">Delete record</span></button></a>' % reverse("assayPatient-delete", args=[pk]), html=True)
+
 
 # CreateView
     def test_redirect_if_not_logged_in_assayPatientCreate(self):
