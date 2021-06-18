@@ -77,7 +77,7 @@ class AssayType(models.Model):
     position_to = models.PositiveIntegerField(default=1)
     transcript = models.CharField(max_length=100)
     cdna = models.CharField(max_length=100)
-    protein = models.CharField(max_length=100)
+    protein = models.CharField(max_length=100, default="Not applicable")
     enzymes = models.ManyToManyField(Enzyme, help_text='Select enzymes for this assay.')
     temperature = models.PositiveIntegerField(null=True, blank=True)
     status = models.IntegerField(choices=Status.choices, default=Status.PENDING)
