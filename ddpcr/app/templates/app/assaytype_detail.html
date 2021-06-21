@@ -2,15 +2,18 @@
 <html lang="en">
 {% extends "app/base_generic.html" %}
 {% block content %}
-<div class="page-header">
-<h1>Assay ID: {{ assaytype.assay_id }}</h1><hr>
-</div>
-  <p><strong>Assay id sec:</strong> {{assaytype.assay_id_sec }}</p> <!-- <a href="">{{ book.author }}</a></p> <!-- author detail link not yet defined -->
+<div class="container">
+  <div class="page-header">
+    <h1>Assay Name: {{ assaytype.assay_name }}</h1><hr>
+  </div>
+  <p><strong>Assay ID: </strong>{{assaytype.assay_id}}</p>
+  <p><strong>Assay ID sec:</strong> {{assaytype.assay_id_sec }}</p> <!-- <a href="">{{ book.author }}</a></p> <!-- author detail link not yet defined -->
+  <p><strong>Tube ID: </strong>{{assaytype.tube_id}}</p>
   <p><strong>Gene:</strong> {{ assaytype.gene }}</p>
   <p><strong>Sequence:</strong> {{ assaytype.sequence }}</p>
   <p><strong>Ref build:</strong> {{ assaytype.ref_build }}</p>
   <p><strong>Genomic position:</strong> {{ assaytype.chromosome }}:{{ assaytype.position_from }}-{{assaytype.position_to}}</p>
-  <p><strong>transcript:</strong> {{ assaytype.transcript }}</p>
+  <p><strong>Transcript:</strong> {{ assaytype.transcript }}</p>
   <p><strong>cDNA:</strong> {{ assaytype.cdna}}</p>
   <p><strong>Protein:</strong> {{ assaytype.protein }}</p>
   <p><strong>Enzymes:</strong> {{ assaytype.enzymes.all|join:", " }}</p>
@@ -21,13 +24,13 @@
   <a href="{% url 'assayType-update' assaytype.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">Update record</span></button></a>
   <!-- <a href="{% url 'assayType-delete' assaytype.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-danger text-light">Delete record</span></button></a> -->
 
-  <div style="margin-left:20px;margin-top:20px">
+  <div class="container-sm" style="margin-left:20px;margin-top:20px">
     <h2>Assay lots</h2>
     <hr>
     {% for lot in assaytype.assaylot_set.all %}
       <!-- Funkar inte riktigt, blir ordered efter datum? Och ser ej farger -->
-      <p class="{% if lot.status == 'activated' %}text-success{% elif lot.status == 'inactivated' %}text-danger{% else %}text-warning{% endif %}">
-        {{ lot.get_status_display }}
+      <p class="{% if lot.status == 'Active' %}text-success{% elif lot.status == 'Inactive' %}text-danger{% else %}text-warning{% endif %}">
+        {{ lot.status }}
       </p>
       <!-- {% if copy.status != 'a' %}
         <p><strong>Due to be returned:</strong> {{ copy.due_back }}</p>
@@ -52,4 +55,5 @@
       <p> There are no patients associated with assay {{ assaytype.assay_id }}. </p>
     {% endif %}
   </div>
+</div>
 {% endblock %}

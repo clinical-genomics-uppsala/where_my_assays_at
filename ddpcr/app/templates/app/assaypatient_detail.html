@@ -2,13 +2,15 @@
 <html lang="en">
 {% extends "app/base_generic.html" %}
 {% block content %}
-<div class="page-header">
-  <h1>Study ID: {{ assaypatient.study_id }}</h1>
-</div>
-  <p><strong>Assay:</strong> <a href="{% url 'assayType-detail' assaypatient.assay.pk %}"> {{ assaypatient.assay }}</a></p>
-  <p><strong>Date added:</strong> {{ assaypatient.date_added }}</p>
-  <p><strong>Comment:</strong> {{ assaypatient.comment }}</p>
+<div class="container">
+  <div class="page-header">
+    <h1>Study ID: {{ assaypatient.study_id }}</h1>
+  </div>
+    <p><strong>Assay:</strong> <a href="{% url 'assayType-detail' assaypatient.assay.pk %}"> {{ assaypatient.assay }}</a></p>
+    <p><strong>Date added:</strong> {{ assaypatient.date_added }}</p>
+    <p class="text-muted"><strong>Comment:</strong> {{ assaypatient.comment }}</p>
 
-  <a href="{% url 'assayPatient-update' assaypatient.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">Update record</span></button></a>
-  <!-- <a href="{% url 'assayPatient-delete' assaypatient.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-danger text-light">Delete record</span></button></a> -->
+    <a href="{% url 'assayPatient-update' assaypatient.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">Update record</span></button></a>
+    <!-- <a href="{% url 'assayPatient-delete' assaypatient.pk %}"><button type="button" class = "btn btn-default"><span class="badge bg-danger text-light">Delete record</span></button></a> -->
+</div>
 {% endblock %}
