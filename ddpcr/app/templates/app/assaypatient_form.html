@@ -1,13 +1,28 @@
 {% extends "app/base_generic.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-  <form action="" method="post">
-    {% csrf_token %}
-    <h1>Update/Add assay patient</h1>
-    Dela upp till en _create_form och en _update_form? Isf lagga till template_name_suffix = '_update_form' i view
-    <table>
-    {{ form.as_table }}
-    </table>
-    <input type="submit" value="Submit">
-  </form>
+{% if object %}
+    <div class="page-header"><h1>Update Study ID</h1></div>
+{% else %}
+    <div class="page-header"><h1>New Study ID</h1></div>
+{% endif %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-10">
+      <form action="" method="post">
+        {% csrf_token %}
+        <!-- Dela upp till en _create_form och en _update_form? Isf lagga till template_name_suffix = '_update_form' i view -->
+        <table>
+        {{ form|crispy }}
+        </table>
+        {% if object %}
+          <input type="submit" class="btn btn-success" value="Update Study ID"/>
+        {% else %}
+          <input type="submit" class="btn btn-success" value="Add new Study ID"/>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -1,11 +1,29 @@
 {% extends "app/base_generic.html" %}
-Add/Update Assay Type
+{% load crispy_forms_tags %}
+
 {% block content %}
-  <form action="" method="post">
-    {% csrf_token %}
-    <table>
-    {{ form.as_table }}
-    </table>
-    <input type="submit" value="Submit">
-  </form>
+{% if object %}
+    <div class="page-header"><h1>Update Assay Type</h1></div>
+{% else %}
+    <div class="page-header"><h1>New Assay Type</h1></div>
+{% endif %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-10">
+      <form action="" method="post">
+        {% csrf_token %}
+        <table>
+          {{ form|crispy }}
+        <!-- {{ form.as_table }} -->
+        </table>
+        <!-- Saknar mellanrum till submit-button -->
+        {% if object %}
+          <input type="submit" class="btn btn-success" value="Update Assay Type"/>
+        {% else %}
+          <input type="submit" class="btn btn-success" value="Add new Assay"/>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

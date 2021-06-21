@@ -22,9 +22,17 @@ from django.utils.translation import ugettext_lazy as _
 #         return data
 
 from django.forms import ModelForm
-from .models import AssayLOT
+from .models import AssayType, AssayLOT
 
-class AssayLotUpdateForm(ModelForm):
+class AssayTypeForm(ModelForm):
+    class Meta:
+        model = AssayType
+        fields = ['assay_name', 'assay_id', 'assay_id_sec', 'tube_id', 'gene', 'sequence', 'ref_build', 'chromosome', 'position_from', 'position_to', 'transcript', 'cdna', 'protein', 'enzymes','temperature','status','comment']
+        widgets = {
+            'assay_name': forms.TextInput(attrs={'placeholder': _('Gene_Protein_cDNA')}),
+        }
+
+class AssayLotForm(ModelForm):
     # Status field should be dependent on if there is a value for the corresponding date. How?
     #Should we start with just ValidationError if there is a date and not the corresponding status?
     class Meta:
@@ -32,7 +40,7 @@ class AssayLotUpdateForm(ModelForm):
         fields = ['assay','date_order','date_scanned','lot','date_validated','test_id','date_activated','volume_low','date_inactivated','fridge_id', 'box_id', 'box_position','comment']
 
     def clean(self):
-        cleaned_data = super(AssayLotUpdateForm, self).clean()
+        cleaned_data = super(AssayLotForm, self).clean()
         date_ordered = cleaned_data.get("date_order")
         date_scanned = cleaned_data.get("date_scanned")
         date_validated = cleaned_data.get("date_validated")
