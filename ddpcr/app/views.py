@@ -11,7 +11,7 @@ from django.conf import settings
 
 from .models import AssayType, AssayLOT, AssayPatient, Enzyme
 
-from app.forms import AssayLotUpdateForm
+from app.forms import AssayLotForm, AssayTypeForm
 #For login req views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
@@ -64,11 +64,13 @@ class AssayTypeDetailView(LoginRequiredMixin,generic.DetailView):
     #     return Question.objects.filter(pub_date__lte=timezone.now())
 class AssayTypeCreate(LoginRequiredMixin, CreateView):
     model = AssayType
-    fields = '__all__' #not recommended should be explicit
+    # fields = '__all__' #not recommended should be explicit
+    form_class = AssayTypeForm
 
 class AssayTypeUpdate(LoginRequiredMixin, UpdateView):
     model = AssayType
-    fields = '__all__' #not recommended should be explicit
+    # fields = '__all__' #not recommended should be explicit
+    form_class = AssayTypeForm
 
 class AssayTypeDelete(LoginRequiredMixin, DeleteView):
     model = AssayType
@@ -93,7 +95,7 @@ class AssayLotCreate(LoginRequiredMixin, CreateView):
 
 class AssayLotUpdate(LoginRequiredMixin, UpdateView):
     model = AssayLOT
-    form_class = AssayLotUpdateForm
+    form_class = AssayLotForm
     # fields = '__all__' #not recommended should be explicit
 
 class AssayLotDelete(LoginRequiredMixin, DeleteView):

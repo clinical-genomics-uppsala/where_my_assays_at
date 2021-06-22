@@ -11,9 +11,11 @@
     <table class="table table-striped table-hover">
       <thead>
         <tr>
-          <th>Assay ID</th>
+          <th>Assay Name</th>
           <th>Gene</th>
+          <th>Protein</th>
           <th>Transcript</th>
+          <th>cDNA</th>
           <th>Status</th>
           <th>Edit</th>
           <!-- <th>Delete</th> -->
@@ -22,9 +24,11 @@
       <tbody>
       {% for assay in assaytype_list %}
         <tr>
-         <td><a href="{{ assay.get_absolute_url }}">{{ assay.assay_id }}</a></td>
+         <td><a href="{{ assay.get_absolute_url }}">{{ assay.assay_name }}</a></td>
          <td>{{assay.gene}}</td>
+         <td>{{assay.protein}}</td>
          <td>{{assay.transcript}}</td>
+         <td>{{assay.cdna}}</td>
          <td>{{assay.status}}</td>
          <td><a href='{% url "assayType-update" assay.pk %}'>
            <button type="button" class="btn btn-light">

@@ -12,7 +12,8 @@
       <tr>
         <th>Lot</th>
         <th>Assay</th>
-        <th>Freezer ID</th>
+        <th>Fridge ID</th>
+        <th>Box ID</th>
         <th>Box Position</th>
         <th>Status</th>
         <th>Edit</th>
@@ -24,7 +25,8 @@
       <tr>
        <td><a href="{{ lot.get_absolute_url }}">{{ lot.lot }}</a></td>
        <td>{{lot.assay}}</td>
-       <td>{{lot.freezer_id}}</td>
+       <td>{{lot.fridge_id}}</td>
+       <td>{{lot.box_id}}</td>
        <td>{{lot.box_position}}</td>
        <td>{{lot.status}}</td>
        <td><a href='{% url "assayLot-update" lot.pk %}'>

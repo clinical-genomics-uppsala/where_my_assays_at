@@ -119,7 +119,7 @@ class AssayLOT(models.Model): #Add validators for dates not to be out of order
 
     class Meta:
         ordering = ['assay']
-        permissions = (("can_update", "Update assay lot"),) # Kommer inte ihag???
+        permissions = (("can_update", "Update assay lot"),) # Vi borde ju kunna definera olika permissions, en read only, en edit och en delete. Dessa ar bara hittepa
 
     def __str__(self):
         return f'{self.lot}-{self.lot}'
