@@ -38,7 +38,7 @@ def index(request):
 # Assay Type
 class AssayTypeView(LoginRequiredMixin, generic.ListView):
     model = AssayType
-    paginate_by = 10
+    # paginate_by = 10
     context_object_name = 'assaytype_list'
     queryset = AssayType.objects.all() #filter(sequence__icontains='AA')[:5]
     template_name = 'app/assaytype_list.html'
@@ -55,7 +55,7 @@ class AssayTypeView(LoginRequiredMixin, generic.ListView):
 
 class AssayTypeDetailView(LoginRequiredMixin,generic.DetailView):
     model = AssayType
-    paginate_by = 10
+    # paginate_by = 10
     # template_name = 'app/detail.html'
     # def get_queryset(self):
     #     """
@@ -80,7 +80,7 @@ class AssayTypeDelete(LoginRequiredMixin, DeleteView):
 
 class AssayLotView(LoginRequiredMixin, generic.ListView):
     model = AssayLOT
-    paginate_by = 10
+    # paginate_by = 10
     context_object_name = 'assaylot_list'
     queryset = AssayLOT.objects.all() # Eller ska vi filtrera pa bara activated etc?
     template_name = 'app/assaylot_list.html'
@@ -105,7 +105,7 @@ class AssayLotDelete(LoginRequiredMixin, DeleteView):
 # Assay Patient
 class AssayPatientView(LoginRequiredMixin, generic.ListView):
     model = AssayPatient
-    paginate_by = 10
+    # paginate_by = 10
 
 class AssayPatientDetailView(LoginRequiredMixin, generic.DetailView):
     model = AssayPatient
