@@ -1,19 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
 {% extends "app/base_generic.html" %}
 {% block content %}
-  <h1>DDPCR Database Home</h1>
-  <p>Welcome to Clinical Genomic Uppsala's DDPCR database!</p>
-  <h2>Dynamic content</h2>
-  <p>The database has the following number of records:</p>
+  <p>Welcome to Clinical Genomic Uppsala's ddPCR database!</br>
+    The database has the following number of records:</p>
   <ul>
-    <li><strong>Assays:</strong> {{ num_assay }}</li>
     <li><strong>Patients:</strong> {{ num_patient }}</li>
-    <!-- <li><strong>Copies available:</strong> {{ num_instances_available }}</li> -->
-    <!-- <li><strong>Authors:</strong> {{ num_authors }}</li> -->
   </ul>
   Lagga till plot over antal assay type, lot och patienter?
 
-  <p> You have visited this page {{ num_visits }} time{% if num_visits > 1 %}s{% endif %}.</p>
+  <div class="card m-3">
+    <div class="card-header">Currently {{ num_assay }} assays</div>
+    <div class="card-body">
+      <div class="container-fluid">
+        <div class="row align-items-center">
+          <div class="col-10">
+            <h4 class="card-title">Add assay</h4>
+            <p class="card-text">Add a new type of assay to the database</p>
+          </div>
+          <div class="col-2">
+            <a class="btn btn-primary ms-auto text-white" href="{% url 'assayType-create' %}" role="button">
+            <i class="bi bi-plus-square"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card m-3">
+    <div class="card-header">Currently {{ num_assay }} assays</div>
+    <div class="card-body">
+      <div class="container-fluid">
+        <div class="row align-items-center">
+          <div class="col-10">
+            <h4 class="card-title">Order new LOT</h4>
+            <p class="card-text">Register new LOT order for an existing assay type</p>
+          </div>
+          <div class="col-2">
+            <a class="btn btn-primary ms-auto text-white" href="{% url 'assayLot-order' %}" role="button">
+            <i class="bi bi-plus-square"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--p> You have visited this page {{ num_visits }} time{% if num_visits > 1 %}s{% endif %}.</p-->
 {% endblock %}
-</html>
