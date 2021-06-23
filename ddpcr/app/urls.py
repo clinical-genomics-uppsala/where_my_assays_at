@@ -16,6 +16,7 @@ urlpatterns = [
     path('lots/<int:pk>/', views.AssayLotDetailView.as_view(), name='assayLot-detail'),
     path('lots/<int:pk>/update/', views.AssayLotUpdate.as_view(), name='assayLot-update'),
     path('lots/<int:pk>/delete/', views.AssayLotDelete.as_view(), name='assayLot-delete'),
+    path('lots/order/', views.AssayLotOrder.as_view(), name='assayLot-order'),
 
     path('patients/', views.AssayPatientView.as_view(), name='assayPatient'),
     path('patients/create/', views.AssayPatientCreate.as_view(), name='assayPatient-create'),

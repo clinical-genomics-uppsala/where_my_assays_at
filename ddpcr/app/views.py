@@ -62,6 +62,7 @@ class AssayTypeDetailView(LoginRequiredMixin,generic.DetailView):
     #     Excludes any questions that aren't published yet.
     #     """
     #     return Question.objects.filter(pub_date__lte=timezone.now())
+
 class AssayTypeCreate(LoginRequiredMixin, CreateView):
     model = AssayType
     # fields = '__all__' #not recommended should be explicit
@@ -101,6 +102,10 @@ class AssayLotUpdate(LoginRequiredMixin, UpdateView):
 class AssayLotDelete(LoginRequiredMixin, DeleteView):
     model = AssayLOT
     success_url = reverse_lazy('assaylot')
+
+class AssayLotOrder(LoginRequiredMixin, generic.ListView):
+    model = AssayType
+    template_name = 'app/assaylot_order.html'
 
 # Assay Patient
 class AssayPatientView(LoginRequiredMixin, generic.ListView):
