@@ -1,57 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  {% block title %}<title>Clinical Genomics Uppsala - DDPCR database</title>{% endblock %}
-
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-  <!-- Changed to bootstrap4 to get crispyforms to work properly with select -->
-  <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous"> -->
-  <!-- Add additional CSS in static file -->
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'app/style.css' %}">
-</head>
-<body>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-sm-2">
-      {% block sidebar %}
-        <ul class="sidebar-nav">
-          <li><a href="{% url 'index' %}">Home</a></li>
-          <li><a href="{% url 'assayType' %}">All assays</a></li>
-          <li><a href="{% url 'assayLot' %}">All assay lots</a></li>
-          <li><a href="{% url 'assayPatient' %}">All assay patients</a></li>
-          <br>
-          {% if user.is_authenticated %}
-            <li>User: {{ user.get_username }}</li>
-            <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
-          {% else %}
-            <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>
-          {% endif %}
-        </ul>
-     {% endblock %}
+  <head>
+    {% block title %}<title>Clinical Genomics Uppsala - ddPCR database</title>{% endblock %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous"-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/style.css' %}">
+  </head>
+  <body>
+    <nav class="navbar sticky-top navbar-dark bg-dark">
+      <div class="container-fluid">
+        <span class="navbar-brand">CGU - ddPCR database</span>
+        <spacer />
+        {% if user.is_authenticated %}
+          <span class="navbar-text px-3">Welcome {{ user.get_username }}</span>
+          <a class="btn btn-outline-light" role="button" href="{% url 'logout' %}?next={{ request.path }}">Logout</a>
+        {% else %}
+          <a class="btn btn-outline-primary" role="button" href="{% url 'login' %}?next={{ request.path }}">Login</a>
+        {% endif %}
       </div>
-      <div class="col-sm-10 ">{% block content %}{% endblock %}
-        {% block pagination %}
-          {% if is_paginated %}
-            <div class="pagination">
+    </nav>
+    <div class="d-flex main-container">
+      {% block sidebar %}
+        <div class="border-end h-100" id="sidebar-wrapper">
+          <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action list-group-item-light px-5 py-3 border-0" href="{% url 'index' %}">Home</a>
+            <a class="list-group-item list-group-item-action list-group-item-light px-5 py-3 border-0" href="{% url 'assayType' %}">Assays</a>
+            <a class="list-group-item list-group-item-action list-group-item-light px-5 py-3 border-0" href="{% url 'assayLot' %}">LOTs</a>
+            <a class="list-group-item list-group-item-action list-group-item-light px-5 py-3 border-0" href="{% url 'assayPatient' %}">Patients</a>
+          </div>
+          <div id="container" class="container-fluid h-100">
+            <div class="row h-100">
+              <div class="d-sm-none d-md-block col-md-1">
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endblock %}
+      <div id="page-content-wrapper">
+        <div class="container-fluid m-3">
+          {% block content %}{% endblock %}
+          {% block pagination %}
+            {% if is_paginated %}
+              <div class="pagination">
                 <span class="page-links">
                   {% if page_obj.has_previous %}
-                      <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>
+                    <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>
                   {% endif %}
                   <span class="page-current">
-                      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
                   </span>
                   {% if page_obj.has_next %}
                       <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">next</a>
                   {% endif %}
-              </span>
-          </div>
-      {% endif %}
-    {% endblock %}
-  </div>
+                </span>
+              </div>
+            {% endif %}
+          {% endblock %}
+        </div>
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>
