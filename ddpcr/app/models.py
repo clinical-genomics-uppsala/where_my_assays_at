@@ -89,8 +89,12 @@ class AssayType(models.Model):
     def __str__(self):
         return self.assay_name
 
+    def statlab(self):
+        """ Show status label not integer """
+        return AssayType.Status(self.status).label
+
     def display_enzymes(self):
-        """ Create string to display first two enzymes in admin.py """
+        """ Display enzymes for assay type """
         return ', '.join(enzyme.name for enzyme in self.enzymes.all()[:3])
 
     display_enzymes.short_description = 'Enzymes'
