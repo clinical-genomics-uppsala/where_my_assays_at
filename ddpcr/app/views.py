@@ -38,7 +38,7 @@ def index(request):
 # Assay Type
 class AssayTypeView(LoginRequiredMixin, generic.ListView):
     model = AssayType
-    paginate_by = 10
+    # paginate_by = 10
     context_object_name = 'assaytype_list'
     queryset = AssayType.objects.all() #filter(sequence__icontains='AA')[:5]
     template_name = 'app/assaytype_list.html'
@@ -55,7 +55,7 @@ class AssayTypeView(LoginRequiredMixin, generic.ListView):
 
 class AssayTypeDetailView(LoginRequiredMixin,generic.DetailView):
     model = AssayType
-    paginate_by = 10
+    # paginate_by = 10
     # template_name = 'app/detail.html'
     # def get_queryset(self):
     #     """
@@ -80,7 +80,7 @@ class AssayTypeDelete(LoginRequiredMixin, DeleteView):
 
 class AssayLotView(LoginRequiredMixin, generic.ListView):
     model = AssayLOT
-    paginate_by = 10
+    # paginate_by = 10
     context_object_name = 'assaylot_list'
     queryset = AssayLOT.objects.all() # Eller ska vi filtrera pa bara activated etc?
     template_name = 'app/assaylot_list.html'
@@ -105,7 +105,7 @@ class AssayLotDelete(LoginRequiredMixin, DeleteView):
 # Assay Patient
 class AssayPatientView(LoginRequiredMixin, generic.ListView):
     model = AssayPatient
-    paginate_by = 10
+    # paginate_by = 10
 
 class AssayPatientDetailView(LoginRequiredMixin, generic.DetailView):
     model = AssayPatient
@@ -121,36 +121,21 @@ class AssayPatientUpdate(LoginRequiredMixin, UpdateView):
 class AssayPatientDelete(LoginRequiredMixin, DeleteView):
     model = AssayPatient
     success_url = reverse_lazy('assayPatient')
-#
-# @login_required
-# @permission_required('app.can_update', raise_exception=True)
-# def assayLot_update(request, pk):
-#     """View function for renewing a specific assayLot."""
-#     assayLot_instance = get_object_or_404(AssayLOT, pk=pk)
-#
-#     # If this is a POST request then process the Form data
-#     if request.method == 'POST':
-#
-#         # Create a form instance and populate it with data from the request (binding):
-#         form = UpdateAssayLotForm(request.POST)
-#
-#         # Check if the form is valid:
-#         if form.is_valid():
-#             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-#             assayLot_instance.date_scanned = form.cleaned_data['update_date_scanned']
-#             assayLot_instance.save()
-#
-#             # redirect to a new URL:
-#             return HttpResponseRedirect(reverse('assayLot')) #Borde val peka pa samma assay lot inte alla
-#
-#     # If this is a GET (or any other method) create the default form.
-#     else:
-#         proposed_date_scanned = datetime.date.today()
-#         form = UpdateAssayLotForm(initial={'update_date_scanned': proposed_date_scanned})
-#
-#     context = {
-#         'form': form,
-#         'assayLot_instance': assayLot_instance,
-#     }
-    #
-    # return render(request, 'app/assaylot_update.html', context)
+
+#Enzyme
+
+class EnzymeView(LoginRequiredMixin, generic.ListView):
+    model = Enzyme
+    context_object_name='enzyme_list'
+    queryset = Enzyme.objects.all()
+    template_name = 'app/enzyme_list.html'
+
+class EnzymeCreate(LoginRequiredMixin, CreateView):
+    model = Enzyme
+    fields = '__all__'
+    success_url = reverse_lazy('enzyme')
+
+class EnzymeUpdate(LoginRequiredMixin, UpdateView):
+    model = Enzyme
+    fields = '__all__' #not recommended should be explicit
+    success_url = reverse_lazy('enzyme')

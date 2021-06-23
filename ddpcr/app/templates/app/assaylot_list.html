@@ -7,7 +7,7 @@
 <h1>Assay Lots<a href="{% url 'assayLot-create' %}"><button type="button" class = "btn btn-default"><span class="badge bg-light text-dark">New</span></button></a></h1>
 {% if assaylot_list %}
 <div class="table-responsive">
-  <table class="table table-striped table-hover">
+  <table id="table_id" class="table table-striped table-hover">
     <thead>
       <tr>
         <th>Lot</th>
@@ -15,6 +15,7 @@
         <th>Fridge ID</th>
         <th>Box ID</th>
         <th>Box Position</th>
+        <th>Volume Low</th>
         <th>Status</th>
         <th>Edit</th>
         <!-- <th>Delete</th> -->
@@ -28,6 +29,7 @@
        <td>{{lot.fridge_id}}</td>
        <td>{{lot.box_id}}</td>
        <td>{{lot.box_position}}</td>
+       <td>{% if lot.volume_low %}<p class="text-danger">{% bs_icon "exclamation-triangle" %}</p>{% endif %}</td> <!-- How to make it narrower? -->
        <td>{{lot.status}}</td>
        <td><a href='{% url "assayLot-update" lot.pk %}'>
          <button type="button" class="btn btn-light ">
@@ -39,7 +41,17 @@
     {% endfor %}
     </tbody>
   </table>
-</div>
+  {% block js %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.3.1/dt-1.10.25/b-1.7.1/date-1.1.0/datatables.min.css"/>
+
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.3.1/dt-1.10.25/b-1.7.1/date-1.1.0/datatables.min.js"></script>
+    <script>
+    $(document).ready( function () {
+        $('#table_id').DataTable();
+    } );
+    </script>
+    </div>
+  {% endblock %}
 {% else %}
   <p>There are no assay lots in the database.</p>
 {% endif %}
