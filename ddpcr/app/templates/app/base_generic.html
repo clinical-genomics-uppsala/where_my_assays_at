@@ -21,6 +21,7 @@
           <li><a href="{% url 'assayType' %}">All assays</a></li>
           <li><a href="{% url 'assayLot' %}">All assay lots</a></li>
           <li><a href="{% url 'assayPatient' %}">All assay patients</a></li>
+          <li><a href="{% url 'enzyme' %}">All enzymes</a></li>
           <br>
           {% if user.is_authenticated %}
             <li>User: {{ user.get_username }}</li>

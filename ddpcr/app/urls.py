@@ -22,4 +22,8 @@ urlpatterns = [
     path('patients/<int:pk>/', views.AssayPatientDetailView.as_view(), name='assayPatient-detail'),
     path('patients/<int:pk>/update/', views.AssayPatientUpdate.as_view(), name='assayPatient-update'),
     path('patients/<int:pk>/delete/', views.AssayPatientDelete.as_view(), name='assayPatient-delete'),
+
+    path('enzymes/', views.EnzymeView.as_view(), name='enzyme'),
+    path('enzymes/create/', views.EnzymeCreate.as_view(), name='enzyme-create'),
+    path('enzymes/<int:pk>/update/', views.EnzymeUpdate.as_view(), name='enzyme-update'),
 ]
