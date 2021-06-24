@@ -11,14 +11,15 @@
     <div class="card-header">Currently {{ num_assay }} assays</div>
     <div class="card-body">
       <div class="container-fluid">
-        <div class="row align-items-center">
+        <div class="row align-items-center justify-content-between">
           <div class="col-10">
             <h4 class="card-title">Add assay</h4>
             <p class="card-text">Add a new type of assay to the database</p>
           </div>
+          <spacer />
           <div class="col-2">
-            <a class="btn btn-primary ms-auto text-white" href="{% url 'assayType-create' %}" role="button">
-            <i class="bi bi-plus-square"></i>
+            <a class="btn btn-primary text-white" href="{% url 'assayType-create' %}" role="button">
+              <i class="bi bi-plus-square"></i>
             </a>
           </div>
         </div>
@@ -26,17 +27,18 @@
     </div>
   </div>
   <div class="card m-3">
-    <div class="card-header">Currently {{ num_assay }} assays</div>
+    <div class="card-header">Currently (not implemented) LOTs</div>
     <div class="card-body">
       <div class="container-fluid">
-        <div class="row align-items-center">
+        <div class="row align-items-center justify-content-between">
           <div class="col-10">
             <h4 class="card-title">Order new LOT</h4>
             <p class="card-text">Register new LOT order for an existing assay type</p>
           </div>
+          <spacer />
           <div class="col-2">
-            <a class="btn btn-primary ms-auto text-white" href="{% url 'assayLot-order' %}" role="button">
-            <i class="bi bi-plus-square"></i>
+            <a class="btn btn-primary text-white" href="{% url 'assayLot-order' %}" role="button">
+              <i class="bi bi-box"></i>
             </a>
           </div>
         </div>
