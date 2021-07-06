@@ -16,14 +16,25 @@ from app.forms import AssayForm, LotOrderForm, LotScanForm, LotValidateForm, Lot
 def index(request):
     if not request.user.is_authenticated:
         return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
+    """ View function for home page """
+    #  Collect numbers for table
+    num_assay = AssayType.objects.all().count()
+    num_lot = AssayLOT.objects.all().count()
+    num_patient = AssayPatient.objects.all().count()
+    num_enzyme = Enzyme.objects.all().count()
 
+    # Number of visits to this view, as counted in the session variable.
+    num_visits = request.session.get('num_visits', 1)
+    request.session['num_visits'] = num_visits + 1
+
+        # Save all in context-dict
     context = {
-        'num_assay': AssayType.objects.all().count(),
-        'num_assay_order': AssayType.objects.filter(status=4).count() + AssayType.objects.filter(status=3).count(),
-        'num_order': AssayLOT.objects.filter(status='Ordered').count(),
-        'num_patient': AssayPatient.objects.all().count(),
-        'num_scan': AssayLOT.objects.filter(status='Scanned').count(),
-    }
+        'num_assay': num_assay,
+        'num_lot': num_lot,
+        'num_patient': num_patient,
+        'num_enzyme': num_enzyme,
+        'num_visits': num_visits,
+        }
     return render(request, 'app/index.html', context=context)
 
 # List of objects

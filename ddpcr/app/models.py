@@ -142,7 +142,7 @@ class AssayLOT(models.Model):
 
     # Functions
     def __str__(self):
-        return f'{self.lot}-{self.lot}'
+        return f'{self.lot}'
 
     @property
     def get_status(self):
