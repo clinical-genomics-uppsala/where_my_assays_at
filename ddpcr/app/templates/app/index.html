@@ -25,6 +25,9 @@
       </div>
     </div>
   </div>
+
+  <div id="lotsPerType" style="min-width: 310px; height: 400px; margin: 0 auto" class="border"></div>
+
     <div class="row">
       <div class="col-sm">
         <div class="table-responsive">
@@ -55,10 +58,128 @@
           </table>
         </div>
       </div>
-    <div class="col-md">
-      <h3>En bra överskrift</h3>
-       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sapien ex, posuere et pharetra eget, tempus et tortor. Donec facilisis tortor magna. Aliquam id eleifend ipsum. Integer a ipsum enim. Etiam tincidunt, odio gravida viverra bibendum, tellus velit ullamcorper massa, nec euismod eros lorem at est. Donec volutpat id nibh ut luctus. Ut ornare lorem sed magna rutrum, vel cursus sem semper. Curabitur sit amet sapien nec quam sollicitudin pulvinar. Proin sed magna nec eros interdum laoreet. Aliquam accumsan tempus ex, ac tempor arcu vulputate at. Suspendisse auctor ornare ligula, non egestas nunc pellentesque id.
+      <div class="col-md">
+        <h3>En bra överskrift</h3>
+         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sapien ex, posuere et pharetra eget, tempus et tortor. Donec facilisis tortor magna. Aliquam id eleifend ipsum. Integer a ipsum enim. Etiam tincidunt, odio gravida viverra bibendum, tellus velit ullamcorper massa, nec euismod eros lorem at est. Donec volutpat id nibh ut luctus. Ut ornare lorem sed magna rutrum, vel cursus sem semper. Curabitur sit amet sapien nec quam sollicitudin pulvinar. Proin sed magna nec eros interdum laoreet. Aliquam accumsan tempus ex, ac tempor arcu vulputate at. Suspendisse auctor ornare ligula, non egestas nunc pellentesque id.
+      </div>
     </div>
   </div>
-</div>
+
+  <div id="numAssayPerPatient" style="min-width: 310px; height: 400px; margin: 0 auto" class="border"></div>
+
+  <p> You have visited this page {{ num_visits }} time{% if num_visits > 1 %}s{% endif %}.</p>
+
+  <!-- Generating plots   -->
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/series-label.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <script>
+    Highcharts.chart('lotsPerType', {
+        chart: {
+            type: 'column',
+            zoomType: 'x'
+        },
+        title: {
+            text: 'Assay lots per Assay Type'
+        },
+        subtitle: {
+          text: document.ontouchstart === undefined ?
+            'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+        },
+        xAxis: {
+            categories: {{ assaytypelabels|safe }},
+            crosshair: true,
+            labels: {
+              rotation: -45,
+              style: {
+                  fontSize: '13px',
+                  fontFamily: 'Verdana, sans-serif'
+              }
+            }
+        },
+        yAxis: {
+          title:{
+            text: 'Number of assay lots'
+          }
+        },
+        plotOptions: {
+          column: {
+            stacking: 'normal',
+          }
+        },
+        tooltip: {
+          headerFormat: '<b>{point.x}</b><br/>',
+          pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+        },
+        series: [{
+            name: 'Active',
+            data: {{ active|safe }},
+            color: 'rgba(171, 221, 164, 1)'
+        }, {
+            name: 'Validated',
+            data: {{ validated|safe }},
+            color: 'rgba(255, 255, 191, 1)'
+        }, {
+            name: 'Scanned',
+            data: {{ scanned|safe }},
+            color: 'rgba(253, 174, 97, 0.7)'
+        }, {
+          name: 'Ordered',
+          data: {{ ordered|safe }},
+          color: 'rgba(43, 131, 186, 0.7)'
+        }, {
+          name: 'Inactive',
+          data: {{ inactive|safe }},
+          color: 'rgba(215, 25, 28, 0.7)'
+        }]
+    });
+
+    Highcharts.chart('numAssayPerPatient', {
+      chart: {
+                zoomType: 'x'
+            },
+      title: {
+        text: 'Assays per Study ID'
+      },
+      subtitle: {
+        text: document.ontouchstart === undefined ?
+          'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+      },
+      xAxis: {
+        categories: {{ barLabel|safe }},
+        labels: {
+          rotation: -45,
+          style: {
+              fontSize: '13px',
+              fontFamily: 'Verdana, sans-serif'
+          }
+        }
+      },
+      yAxis: {
+        title: {
+          text: 'Number of assays'
+        }
+      },
+      legend: {
+        enabled: false
+      },
+      series: [ {
+        type: 'spline',
+        name: 'Average',
+        data: {{ barAvg|safe }},
+        color: 'grey',
+        lineWidth: 3,
+        marker: {
+          enabled: false
+        }
+      }, {
+        type: 'column',
+        name: 'Num of assays',
+        data: {{ barData|safe }}
+      }]
+    });
+
+  </script>
 {% endblock %}

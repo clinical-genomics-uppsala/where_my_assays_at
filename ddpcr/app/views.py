@@ -1,13 +1,17 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Avg, Count
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
 from django.views.generic import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
+import json
 
 from .models import AssayType, AssayLOT, AssayPatient, Enzyme
 
@@ -27,14 +31,74 @@ def index(request):
     num_visits = request.session.get('num_visits', 1)
     request.session['num_visits'] = num_visits + 1
 
-        # Save all in context-dict
+    ''' Collect numbers for plots '''
+    # Num assay type per patient
+    barData = []
+    barLabel = []
+    barAvg = []
+    numAssay = AssayPatient.objects.values('study_id').annotate(acount=Count('assay')).order_by()
+    avgNumAssay = AssayPatient.objects.values('study_id').annotate(acount=Count('assay')).aggregate(Avg('acount'))['acount__avg']
+
+    for entry in numAssay:
+      barData.append(entry['acount'])
+      barLabel.append(entry['study_id'])
+      barAvg.append(avgNumAssay)
+
+    # Number of assay lots per assay type
+    assaylabels = []
+    assaytypelabels = []
+    assaydata = []
+
+    inactive = []
+    active = []
+    validated = []
+    scanned = []
+    ordered = []
+    i = 0
+    assay = ''
+
+    for query in AssayLOT.objects.all().order_by('assay__assay_name'):
+        status = query.status()
+        if query.assay.assay_name != assay:
+            inactive.append(0)
+            active.append(0)
+            validated.append(0)
+            scanned.append(0)
+            ordered.append(0)
+            if assay != '':
+                i += 1
+            assay = query.assay.assay_name
+            assaytypelabels.append(query.assay.assay_name)
+
+        if status == 'Inactive':
+            inactive[i] += 1
+        elif status == 'Active':
+            active[i] += 1
+        elif status == 'Validated':
+            validated[i] += 1
+        elif status == 'Scanned':
+            scanned[i] += 1
+        elif status == 'Ordered':
+            ordered[i] += 1
+
+    # Save all in context-dict
     context = {
-        'num_assay': num_assay,
-        'num_lot': num_lot,
-        'num_patient': num_patient,
-        'num_enzyme': num_enzyme,
-        'num_visits': num_visits,
-        }
+          'num_assay': num_assay,
+          'num_lot': num_lot,
+          'num_patient': num_patient,
+          'num_enzyme': num_enzyme,
+          'num_visits': num_visits,
+          'inactive': json.dumps(inactive),
+          'active': json.dumps(active),
+          'validated': json.dumps(validated),
+          'scanned': json.dumps(scanned),
+          'ordered': json.dumps(ordered),
+          'assaytypelabels': json.dumps(assaytypelabels),
+          'barData': json.dumps(barData),
+          'barLabel': json.dumps(barLabel),
+          'barAvg': json.dumps(barAvg),
+          }
+
     return render(request, 'app/index.html', context=context)
 
 # List of objects
