@@ -1,3 +1,4 @@
 db
 ddpcr/db.sqlite3
+ddpcr/app/migrations/*_auto_*.py
 **/__pycache__/*.pyc
