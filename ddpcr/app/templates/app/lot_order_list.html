@@ -1,0 +1,72 @@
+{% extends "app/base_generic.html" %}
+{% load component_tags %}
+{% block content %}
+  {% block js %}
+  <script>
+    $(document).ready( function () {
+        $('#lot-order-list').DataTable( {
+      "order": [
+        [ 1, "desc" ],
+        [ 0, "asc" ],
+      ],
+      "columnDefs": [
+        {
+          "targets": 1,
+          "width": "15%",
+        },
+        {
+          "targets": 2,
+          "width": "30%",
+        },
+      ]
+    } );
+    } );
+  </script>
+  {% endblock %}
+  <div class="card m-4">
+    <div class="card-header">
+      <div class="d-flex">
+        <i class="bi bi-box"></i>
+        <span class="mx-2">Register assay lot order</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table id="lot-order-list" class="stripe hover row-border">
+          <thead>
+            <tr>
+              <th>Assay Name</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for assay in objects %}
+              <tr>
+                <td>{{ assay.assay_name }}</td>
+                <td>
+                  {% if assay.status == 0 %}
+                    <span class="badge bg-warning">{{ assay.statlab }}</span>
+                  {% elif assay.status < 3 %}
+                    <span class="badge bg-error">{{ assay.statlab }}</span>
+                  {% else %}
+                    <span class="badge bg-success">{{ assay.statlab }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="d-flex">
+                    <a class="btn btn-outline-primary" type="button" href="{% url 'lot-order' assay.pk %}">
+                      <i class="bi bi-box"></i>
+                      <span class="mx-2">Order Placed</span>
+                    </a>
+                  {% component "assay_info_modal" assay=assay %}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+{% extends "app/base_generic.html" %}
+{% load component_tags %}
+{% block content %}
+  {% component "basic_lot_list" 'Activate' True 'toggle-on' objects 'Activate validated lot' 'lot-activate' %}
+{% endblock %}

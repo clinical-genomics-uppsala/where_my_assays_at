@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+{% extends "app/base_generic.html" %}
+{% load component_tags %}
+{% block content %}
+  {% component "basic_lot_list" "Edit" True "pencil-square" objects "View lot details and edit" "lot-update" %}
+{% endblock %}
