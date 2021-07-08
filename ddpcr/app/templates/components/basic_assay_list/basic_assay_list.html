@@ -1,0 +1,76 @@
+{% block js %}
+<script>
+  $(document).ready( function () {
+    $('#table-id').DataTable( {
+      "order": [
+        [ 5, "asc" ],
+        [ 0, "asc" ],
+      ],
+      "columnDefs": [
+        {
+          "targets": 5,
+          "width": "15%",
+        },
+        {
+          "targets": 6,
+          "width": "25%",
+        },
+      ]
+    } );
+  } );
+</script>
+{% endblock %}
+<div class="card m-4">
+  <div class="card-header">
+    <div class="d-flex">
+      <i class="bi bi-{{ icon }}"></i>
+      <span class="mx-2">{{ title }}</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table id="table-id" class="stripe hover row-border" style="width:100%">
+        <thead>
+          <tr>
+            <th>Assay Name</th>
+            <th>Gene</th>
+            <th>Transcript</th>
+            <th>cDNA</th>
+            <th>Protein</th>
+            <th>Status</th>
+            <th>Options</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for object in objects %}
+            <tr>
+              <td>{{ object.assay_name }}</td>
+              <td>{{ object.gene }}</td>
+              <td>{{ object.transcript }}</td>
+              <td>{{ object.cdna }}</td>
+              <td>{{ object.protein }}</td>
+              <td>
+                {% if object.status == 0 %}
+                  <span class="badge bg-warning">{{ object.statlab }}</span>
+                {% elif object.status < 3 %}
+                  <span class="badge bg-error">{{ object.statlab }}</span>
+                {% else %}
+                  <span class="badge bg-success">{{ object.statlab }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="d-flex">
+                  <a class="btn btn-outline-primary" type="button" href="{% url url object.pk %}">
+                    <i class="bi bi-{{ icon }}"></i>
+                    <span class="mx-2">{{ button }}</span>
+                  </a>
+                {% component "assay_info_modal" assay=object %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

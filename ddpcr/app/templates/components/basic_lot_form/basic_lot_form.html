@@ -1,0 +1,47 @@
+{% load widget_tweaks %}
+{% block js %}
+<script>
+  $(document).ready( function () {
+    window.onload = function() {
+      $("#id_lot").focus();
+    };
+  } );
+</script>
+{% endblock %}
+<div class="card m-4">
+  <div class="card-header">
+    <div class="d-flex">
+      <i class="bi bi-{{ icon }}"></i>
+      <span class="mx-2">
+        <small><i>{{ object.assay }}</i></small>
+        {% if object.lot != "" %}
+         [ <strong>{{ object.lot }}</strong>
+         ]
+        {% endif %}
+         - {{ title }}
+      </span>
+    </div>
+  </div>
+  <div class="card-body m-5">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+          {% for error in form.non_field_errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% for field in form.visible_fields %}
+        <div class="my-3">
+          <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+          {% render_field field class="form-control" id=field.id_for_label %}
+          {% for error in field.errors %}
+          <span class="mx-2 text-danger"><small>{{ error }}</small></span>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary" value="Update">Submit</button>
+    </form>
+  </div>
+</div>

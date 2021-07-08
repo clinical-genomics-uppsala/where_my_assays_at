@@ -1,0 +1,77 @@
+<button class="btn btn-outline-primary mx-2" type="button" data-toggle="modal" data-target="#{{ assay.assay_name }}">
+  <i class="bi bi-info-lg"></i>
+  <span class="mx-2">View details</span>
+</button>
+<div class="modal fade" id="{{ assay.assay_name }}" tabindex="-1" role="dialog" aria-labelledby="info-box" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{ assay.assay_name }}</h5>
+        {% if assay.status == 0 %}
+          <span class="badge bg-warning">{{ assay.statlab }}</span>
+        {% elif assay.status < 3 %}
+          <span class="badge bg-error">{{ assay.statlab }}</span>
+        {% else %}
+          <span class="badge bg-success">{{ assay.statlab }}</span>
+        {% endif %}
+      </div>
+      <div class="modal-body">
+        <table class="mx-2">
+          <tbody>
+            <tr>
+              <td><strong>Assay ID</strong></td>
+              <td>{{ assay.assay_id }}</td>
+            </tr>
+            <tr>
+              <td><strong>Assay ID Secondary</strong></td>
+              <td>{{ assay.assay_id_sec }}</td>
+            </tr>
+            <tr>
+              <td><strong>Tube ID</strong></td>
+              <td>{{ assay.tube_id }}</td>
+            </tr>
+            <tr>
+              <td><strong>Gene</strong></td>
+              <td>{{ assay.gene }}</td>
+            </tr>
+            <tr>
+              <td><strong>Transcript</strong></td>
+              <td>{{ assay.transcript }}</td>
+            </tr>
+            <tr>
+              <td><strong>cDNA</strong></td>
+              <td>{{ assay.cdna }}</td>
+            </tr>
+            <tr>
+              <td><strong>Protein</strong></td>
+              <td>{{ assay.protein }}</td>
+            </tr>
+            <tr>
+              <td><strong>Enzymes</strong></td>
+              <td>{{ assay.display_enzymes }}</td>
+            </tr>
+            <tr>
+              <td><strong>Position</strong></td>
+              <td>{{ assay.ref_build }}/chr{{ assay.chromosome }}:{{ assay.position_from }}-{{ assay.position_to }}</td>
+            </tr>
+            <tr>
+              <td><strong>Sequence</strong></td>
+              <td>{{ assay.sequence }}</td>
+            </tr>
+            <tr>
+              <td><strong>Temperature</strong></td>
+              <td>{{ assay.temperature }}</td>
+            </tr>
+            <tr>
+              <td><strong>Comment</strong></td>
+              <td>{{ assay.comment }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

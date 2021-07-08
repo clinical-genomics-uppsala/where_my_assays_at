@@ -1,0 +1,71 @@
+{% block js %}
+<script>
+  $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock %}
+<button class="btn btn-outline-primary mx-2" type="button" data-toggle="modal" data-target="#{{ lot.assay }}-{{ lot.lot }}">
+  <i class="bi bi-info-lg"></i>
+  <span class="mx-2">View details</span>
+</button>
+<div class="modal fade" id="{{ lot.assay }}-{{ lot.lot }}" tabindex="-1" role="dialog" aria-labelledby="info-box" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><small>{{ lot.assay }}</small>/<strong>{{ lot.lot }}</strong></h5>
+        <spacer />
+        {% component "lot_status" lot.status %}
+      </div>
+      <div class="modal-body">
+        <table class="mx-2">
+          <tbody>
+            <tr>
+              <td><strong>Location</strong></td>
+              {% if lot.fridge_if != None %}
+                <td>{{ lot.fridge_id }}/{{ lot.box_id }}:{{ lot.box_position }}</td>
+              {% else %}
+                <td>None</td>
+              {% endif %}
+            </tr>
+            <tr>
+              <td><strong>Test ID</strong></td>
+              <td>{{ lot.test_id }}</td>
+            </tr>
+            <tr>
+              <td><strong>Ordered</strong></td>
+              <td>{{ lot.date_order.date }}</td>
+            </tr>
+            <tr>
+              <td><strong>Scanned</strong></td>
+              <td>{{ lot.date_scanned.date }}</td>
+            </tr>
+            <tr>
+              <td><strong>Validated</strong></td>
+              <td>{{ lot.date_validated.date }}</td>
+            </tr>
+            <tr>
+              <td><strong>Activated</strong></td>
+              <td>{{ lot.date_activated.date }}</td>
+            </tr>
+            <tr>
+              <td><strong>Low Volume</strong></td>
+              <td>{{ lot.date_low_volume.date }}</td>
+            </tr>
+            <tr>
+              <td><strong>Inactivated</strong></td>
+              <td>{{ lot.date_inactivated.date }}</td>
+            </tr>
+            <tr>
+              <td><strong>Comment</strong></td>
+              <td>{{ lot.comment }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
