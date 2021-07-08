@@ -28,22 +28,52 @@
       </div>
     </nav>
     <div class="d-flex main-container">
-      {% block sidebar %}
-        <div class="border-end h-100" id="sidebar-wrapper">
-          <div class="list-group list-group-flush">
-            <a class="list-group-item list-group-item-action list-group-item-light px-5 py-3 border-0" href="{% url 'index' %}">Home</a>
-            <a class="list-group-item list-group-item-action list-group-item-light px-5 py-3 border-0" href="{% url 'assayType' %}">Assays</a>
-            <a class="list-group-item list-group-item-action list-group-item-light px-5 py-3 border-0" href="{% url 'assayLot' %}">LOTs</a>
-            <a class="list-group-item list-group-item-action list-group-item-light px-5 py-3 border-0" href="{% url 'assayPatient' %}">Patients</a>
+      <div id="sidebar-wrapper">
+        <div class="btn-group-vertical">
+          <a type="button" class="btn btn-outline-primary btn-lg nav_dropdown px-4" href="{% url 'index' %}">
+            <i class="bi bi-house-door pr-3"></i>
+            </br>
+            <span class="mx-2">Home</span>
+          </a>
+          <div class="btn-group dropright">
+            {% component "nav_dropdown" icon="droplet" title="Assays" %}
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'assays' %}">View list</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{% url 'assay-create' %}">Add new</a>
+            </div>
           </div>
-          <div id="container" class="container-fluid h-100">
-            <div class="row h-100">
-              <div class="d-sm-none d-md-block col-md-1">
-              </div>
+          <div class="btn-group dropright">
+            {% component "nav_dropdown" icon="grid-3x2-gap" title="Lots" %}
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'lots' %}">View list</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{% url 'lot-order-list' %}">New order</a>
+              <a class="dropdown-item" href="{% url 'lot-scan-list' %}">Scan</a>
+              <a class="dropdown-item" href="{% url 'lot-validate-list' %}">Validate</a>
+              <a class="dropdown-item" href="{% url 'lot-activate-list' %}">Activate</a>
+              <a class="dropdown-item" href="{% url 'lot-low-volume-list' %}">Low Volume</a>
+              <a class="dropdown-item" href="{% url 'lot-inactivate-list' %}">Inactivate</a>
+            </div>
+          </div>
+          <div class="btn-group dropright">
+            {% component "nav_dropdown" icon="person" title="Patients" %}
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'assayPatient' %}">View list</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Add new</a>
+            </div>
+          </div>
+          <div class="btn-group dropright">
+            {% component "nav_dropdown" icon="list" title="Enzymes" %}
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'enzymes' %}">View list</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Add new</a>
             </div>
           </div>
         </div>
-      {% endblock %}
+      </div>
       <div id="page-content-wrapper" class="container-fluid">
         <div class="container-fluid m-3">
           {% block content %}{% endblock %}
