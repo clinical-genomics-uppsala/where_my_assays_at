@@ -47,6 +47,7 @@ CREATE DATABASE ddpcr;
 Finally, migrate your database structure and start your development server like this:
 
 ```
+python mysite/manage.py makemigrations
 python mysite/manage.py migrate
 python mysite/manage.py runserver
 ```
