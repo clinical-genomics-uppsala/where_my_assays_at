@@ -75,7 +75,12 @@
         </div>
       </div>
       <div id="page-content-wrapper" class="container-fluid">
-        <div class="container-fluid m-3">
+        <div class="container-fluid m-1">
+        {% if messages %}
+          {% for message in messages %}
+            {% component "message_alert" message=message %}
+          {% endfor %}
+        {% endif %}
           {% block content %}{% endblock %}
           {% block pagination %}
             {% if is_paginated %}
