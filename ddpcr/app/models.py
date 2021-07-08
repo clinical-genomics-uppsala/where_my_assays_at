@@ -1,25 +1,28 @@
-from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.core.validators import MaxValueValidator
-
-from datetime import date
+from django.core.exceptions import ValidationError
 from django.urls import reverse
-
-from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
-# Create your models here.
+from computed_property import ComputedTextField
+from datetime import date
 
 class Enzyme(models.Model):
-    """ Model representing enzymes in assays """
+    """ Model representing enzymes in assay type """
+
+    # Absolute properties
     name = models.CharField(max_length=10)
 
+    # Functions
     def __str__(self):
-        """ String for representing the Model objext. """
+        """ Give string representation of enzyme """
         return self.name
 
 class AssayType(models.Model):
     """ Model representing assay type """
+
+    # Choices
     class GenomeBuildVersion(models.TextChoices):
         HG38 = 'hg38', _('GRCh38')
         HG19 = 'hg19', _('GRCh37')
@@ -58,7 +61,8 @@ class AssayType(models.Model):
         GRADIENT = 3, _('Gradient PCR')
         OK = 4, _('Ok')
 
-    assay_name = models.CharField(max_length=100)
+    # Absolute properties
+    assay_name = models.CharField(max_length=100, unique=True)
     assay_id = models.CharField(max_length=100)
     assay_id_sec = models.CharField(max_length=100, null=True, blank=True)
     tube_id = models.CharField(max_length=100, null=True, blank=True)
@@ -84,9 +88,11 @@ class AssayType(models.Model):
     comment = models.CharField(max_length=500, null=True, blank=True)
 
     class Meta:
-        ordering = ['chromosome','position_from']
+        ordering = ['-status','assay_name']
 
+    # Functions
     def __str__(self):
+        """ Give string representation of assay type """
         return self.assay_name
 
     def statlab(self):
@@ -105,32 +111,42 @@ class AssayType(models.Model):
         return reverse('assayType-detail', args=[str(self.id)])
 
 
-class AssayLOT(models.Model): #Add validators for dates not to be out of order
+class AssayLOT(models.Model):
 
+    # Linked properties
     assay = models.ForeignKey(AssayType, on_delete=models.CASCADE)
-    date_order = models.DateTimeField('date ordered', validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )]) #bara DateField?
-    date_scanned = models.DateTimeField('date scanned',null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now() )]) #bara DateField?
-    lot = models.CharField(max_length=10, unique=True)
-    date_validated = models.DateTimeField('date validated', null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )]) #bara DateField?
+
+    # Absolute properties
+    lot = models.CharField(max_length=10)
     test_id = models.CharField(max_length=20,null=True, blank=True)
-    date_activated = models.DateTimeField('date activated', null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )]) #bara DateField?
-    volume_low = models.BooleanField(default=False)
-    date_inactivated = models.DateTimeField('date inactivated', null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )]) #bara DateField?
     fridge_id = models.CharField(max_length=10, null=True, blank=True)
     box_id = models.CharField(max_length=20, null=True, blank=True)
     box_position = models.CharField(max_length=20, null=True, blank=True)
     comment = models.CharField(max_length=500, null=True, blank=True)
 
+    date_order = models.DateTimeField('date ordered', validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )])
+    date_scanned = models.DateTimeField('date scanned',null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now() )])
+    date_validated = models.DateTimeField('date validated', null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )])
+    date_activated = models.DateTimeField('date activated', null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )])
+    date_low_volume = models.DateTimeField('date low volume', null=True, blank=True)
+    date_inactivated = models.DateTimeField('date inactivated', null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )])
+
+    # Computed properties
+    status = ComputedTextField(compute_from='get_status')
+
     class Meta:
-        ordering = ['assay']
-        permissions = (("can_update", "Update assay lot"),) # Vi borde ju kunna definera olika permissions, en read only, en edit och en delete. Dessa ar bara hittepa
+        ordering = ['assay', 'status']
+        permissions = (("can_update", "Update assay lot"),)
 
     def __str__(self):
         return f'{self.lot}-{self.lot}'
 
-    def status(self):
+    @property
+    def get_status(self):
         if self.date_inactivated is not None:
             return 'Inactive'
+        elif self.date_low_volume is not None:
+            return 'Low Volume'
         elif self.date_activated is not None:
             return 'Active'
         elif self.date_validated is not None:
