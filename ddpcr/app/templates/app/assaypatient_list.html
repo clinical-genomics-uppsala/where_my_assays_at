@@ -14,7 +14,6 @@
           <th>Assay</th>
           <th>Date Added</th>
           <th>Edit</th>
-          <!-- <th>Delete</th> -->
         </tr>
       </thead>
       <tbody>
@@ -26,9 +25,6 @@
          <td><a href='{% url "assayPatient-update" patient.pk %}'>
            <button type="button" class="btn btn-light ">
              {% bs_icon "pencil-square" %}</button></a></td>
-         <!-- <td><a href='{% url "assayPatient-delete" patient.pk %}'>
-           <button type="button" class="btn btn-light ">
-             {% bs_icon 'trash' %}</button></a></td> -->
         </tr>
       {% endfor %}
       </tbody>
