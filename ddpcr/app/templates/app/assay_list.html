@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+{% extends "app/base_generic.html" %}
+{% load component_tags %}
+{% block content %}
+  {% component "basic_assay_list" "Edit" "pencil-square" objects "View assay details and edit" "assay-update" %}
+{% endblock %}
