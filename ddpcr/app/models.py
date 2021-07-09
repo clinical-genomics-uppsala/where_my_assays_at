@@ -101,7 +101,7 @@ class AssayType(models.Model):
 
     def display_enzymes(self):
         """ Display enzymes for assay type """
-        return ', '.join(enzyme.name for enzyme in self.enzymes.all()[:3])
+        return ', '.join(enzyme.name for enzyme in self.enzymes.all())
 
     display_enzymes.short_description = 'Enzymes'
 
