@@ -2,10 +2,7 @@
 <script>
   $(document).ready( function () {
     $('#table-id').DataTable( {
-      "order": [
-        [ 5, "asc" ],
-        [ 0, "asc" ],
-      ],
+      "order": [],
       "columnDefs": [
         {
           "targets": 5,
@@ -53,7 +50,7 @@
                 {% if object.status == 0 %}
                   <span class="badge bg-warning">{{ object.statlab }}</span>
                 {% elif object.status < 3 %}
-                  <span class="badge bg-error">{{ object.statlab }}</span>
+                  <span class="badge bg-danger">{{ object.statlab }}</span>
                 {% else %}
                   <span class="badge bg-success">{{ object.statlab }}</span>
                 {% endif %}
