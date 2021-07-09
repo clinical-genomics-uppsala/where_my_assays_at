@@ -87,6 +87,7 @@ class BasicForm(View):
 class AssayList(LoginRequiredMixin, BasicList):
     model = AssayType
     template = 'app/assay_list.html'
+    message = "Could not find any assays in database."
     redirect_url = None
 
 # Update existing assay
@@ -133,6 +134,7 @@ class AutoUpdateObjectView(View):
 class LotList(LoginRequiredMixin, BasicList):
     model = AssayLOT
     message = "Could not find any lots in database."
+    redirect_url = None
 
 # Edit and Update lot
 class LotUpdate(LoginRequiredMixin, BasicForm):
