@@ -61,8 +61,7 @@ class AssayType(models.Model):
         OK = 3, _('Ok')
 
     # Absolute properties
-    assay_name = models.CharField(max_length=100, unique=True)
-    assay_id = models.CharField(max_length=100)
+    assay_id = models.CharField(max_length=100, null=True, blank=True)
     assay_id_sec = models.CharField(max_length=100, null=True, blank=True)
     tube_id = models.CharField(max_length=100, null=True, blank=True)
     gene = models.CharField(max_length=100)
@@ -80,11 +79,15 @@ class AssayType(models.Model):
     position_to = models.PositiveIntegerField(default=1)
     transcript = models.CharField(max_length=100)
     cdna = models.CharField(max_length=100)
-    protein = models.CharField(max_length=100, default="Not applicable")
-    enzymes = models.ManyToManyField(Enzyme, help_text='Select enzymes for this assay.')
+    protein = models.CharField(max_length=100, default="p.?")
+    enzymes = models.ManyToManyField(Enzyme)
     temperature = models.PositiveIntegerField(null=True, blank=True)
+    limit_of_detection = models.FloatField(blank=True)
     status = models.IntegerField(choices=Status.choices, default=Status.PENDING)
     comment = models.CharField(max_length=500, null=True, blank=True)
+
+    # Computed properties
+    assay_name = ComputedTextField(compute_from='get_assay_name')
 
     class Meta:
         ordering = ['-status','assay_name']
@@ -93,6 +96,13 @@ class AssayType(models.Model):
     def __str__(self):
         """ Give string representation of assay type """
         return self.assay_name
+
+    @property
+    def get_assay_name(self):
+        if self.protein != "p.?":
+            return "%s_%s" % (self.gene, self.protein.replace("p.", "", 1))
+        else:
+            return "%s_%s" % (self.gene, self.cdna)
 
     def statlab(self):
         """ Show status label not integer """
@@ -116,8 +126,9 @@ class AssayLOT(models.Model):
     assay = models.ForeignKey(AssayType, on_delete=models.CASCADE)
 
     # Absolute properties
-    lot = models.CharField(max_length=10)
-    test_id = models.CharField(max_length=20,null=True, blank=True)
+    project_id = models.CharField(default="CGU201813", max_length=20)
+    lot = models.CharField(max_length=10, unique=True)
+    report_id = models.CharField(max_length=20, null=True, blank=True)
     fridge_id = models.CharField(max_length=10, null=True, blank=True)
     box_id = models.CharField(max_length=20, null=True, blank=True)
     box_position = models.CharField(max_length=20, null=True, blank=True)
@@ -163,13 +174,15 @@ class AssayLOT(models.Model):
 
 
 class AssayPatient(models.Model):
-    assay = models.ForeignKey(AssayType, on_delete=models.CASCADE)
-    study_id = models.CharField(max_length=10)
-    date_added = models.DateTimeField('date added', null=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )]) #bara DateField?
+
+    # Absolute properties
+    study_id = models.CharField(max_length=10, unique=True)
+    assay = models.ManyToManyField(AssayType)
+    date_added = models.DateTimeField('date added', null=True)
     comment = models.CharField(max_length=500, null=True, blank=True)
 
     class Meta:
-        ordering = ['date_added']
+        ordering = ['study_id']
 
     def __str__(self):
         return "{0}_{1}".format(self.assay, self.study_id)
