@@ -50,16 +50,15 @@ class AssayType(models.Model):
         CHR20 = 20, _('Chromosome 20')
         CHR21 = 21, _('Chromosome 21')
         CHR22 = 22, _('Chromosome 22')
-        CHRX = 23, _('Chromosome 23')
-        CHRY = 24, _('Chromosome 24')
-        CHRMT = 25, _('Chromosome 25')
+        CHRX = 23, _('Chromosome X')
+        CHRY = 24, _('Chromosome Y')
+        CHRMT = 25, _('Chromosome MT')
 
     class Status(models.IntegerChoices):
         PENDING = 0, _('Pending')
         DESIGN_FAIL = 1, _('Design failed')
         RUN_FAIL = 2, _('Run failed')
-        GRADIENT = 3, _('Gradient PCR')
-        OK = 4, _('Ok')
+        OK = 3, _('Ok')
 
     # Absolute properties
     assay_name = models.CharField(max_length=100, unique=True)
