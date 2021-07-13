@@ -14,10 +14,14 @@
   </head>
   <body>
     {% load component_tags %}
+    {% load static %}
     {% component_css_dependencies %}
     <nav class="navbar sticky-top navbar-dark bg-dark">
       <div class="container-fluid">
-        <span class="navbar-brand">CGU - ddPCR database</span>
+        <span class="navbar-brand">
+          <img src="{% static "app/cgu_logo.png" %}" width="65" height="30" class="d-inline-block align-top mx-2" alt="cgu">
+          ddPCR database
+        </span>
         <spacer />
         {% if user.is_authenticated %}
           <span class="navbar-text px-3">Welcome {{ user.get_username }}</span>
