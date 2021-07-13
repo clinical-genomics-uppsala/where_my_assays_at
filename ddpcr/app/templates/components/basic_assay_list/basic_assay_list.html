@@ -31,9 +31,9 @@
           <tr>
             <th>Assay Name</th>
             <th>Gene</th>
-            <th>Transcript</th>
             <th>cDNA</th>
             <th>Protein</th>
+            <th>Temperature</th>
             <th>Status</th>
             <th>Options</th>
           </tr>
@@ -43,13 +43,13 @@
             <tr>
               <td>{{ object.assay_name }}</td>
               <td>{{ object.gene }}</td>
-              <td>{{ object.transcript }}</td>
               <td>{{ object.cdna }}</td>
               <td>{{ object.protein }}</td>
+              <td>{{ object.temperature }}</td>
               <td>
                 {% if object.status == 0 %}
                   <span class="badge bg-warning">{{ object.statlab }}</span>
-                {% elif object.status < 3 %}
+                {% elif object.status < 2 %}
                   <span class="badge bg-danger">{{ object.statlab }}</span>
                 {% else %}
                   <span class="badge bg-success">{{ object.statlab }}</span>
