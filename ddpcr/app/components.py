@@ -1,7 +1,7 @@
 from django_components import component
 
 @component.register('assay_info_modal')
-class Calendar(component.Component):
+class AssayInfoModal(component.Component):
     def context(self, assay):
         return {
             'assay': assay,
@@ -11,7 +11,7 @@ class Calendar(component.Component):
         return "components/assay_info_modal/assay_info_modal.html"
 
 @component.register('basic_assay_list')
-class Calendar(component.Component):
+class BasicAssayList(component.Component):
     def context(self, button, icon, objects, title, url):
         return {
             'button': button,
@@ -25,7 +25,7 @@ class Calendar(component.Component):
         return "components/basic_assay_list/basic_assay_list.html"
 
 @component.register('basic_lot_form')
-class Calendar(component.Component):
+class BasicLotForm(component.Component):
     def context(self, form, icon, object, title):
         return {
             'form': form,
@@ -38,7 +38,7 @@ class Calendar(component.Component):
         return "components/basic_lot_form/basic_lot_form.html"
 
 @component.register('basic_lot_list')
-class Calendar(component.Component):
+class BasicLotList(component.Component):
     def context(self, button, complete, icon, objects, title, url):
         return {
             'button': button,
@@ -53,7 +53,7 @@ class Calendar(component.Component):
         return "components/basic_lot_list/basic_lot_list.html"
 
 @component.register('lot_info_modal')
-class Calendar(component.Component):
+class LotInfoModal(component.Component):
     def context(self, lot):
         return {
             'lot': lot,
@@ -63,7 +63,7 @@ class Calendar(component.Component):
         return "components/lot_info_modal/lot_info_modal.html"
 
 @component.register('lot_status')
-class Calendar(component.Component):
+class LotStatus(component.Component):
     def context(self, status):
         return {
             'status': status,
@@ -73,7 +73,7 @@ class Calendar(component.Component):
         return "components/lot_status/lot_status.html"
 
 @component.register('message_alert')
-class Calendar(component.Component):
+class MessageAlert(component.Component):
     def context(self, message):
         return {
             'message': message,
@@ -83,7 +83,7 @@ class Calendar(component.Component):
         return "components/message_alert/message_alert.html"
 
 @component.register('nav_dropdown')
-class Calendar(component.Component):
+class NavDropdown(component.Component):
     def context(self, icon, title):
         return {
             'icon': icon,
