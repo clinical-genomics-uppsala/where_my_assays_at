@@ -28,9 +28,9 @@ class AssayTypeAdmin(admin.ModelAdmin):
         "status",
     )
     fields = [
-        "assay_name",
         "assay_id",
         "assay_id_sec",
+        "tube_id",
         "gene",
         "transcript",
         "cdna",
@@ -42,6 +42,7 @@ class AssayTypeAdmin(admin.ModelAdmin):
         "sequence",
         "enzymes",
         "temperature",
+        "limit_of_detection",
         "status",
         "comment",
     ]
@@ -59,7 +60,7 @@ class AssayLOTAdmin(admin.ModelAdmin):
     list_display = (
         "assay",
         "lot",
-        "test_id",
+        "report_id",
         "fridge_id",
         "box_id",
         "box_position",
@@ -73,7 +74,6 @@ admin.site.register(AssayLOT, AssayLOTAdmin)
 
 class AssayPatientAdmin(admin.ModelAdmin):
     list_display = (
-        "assay",
         "study_id",
         "date_added",
     )
