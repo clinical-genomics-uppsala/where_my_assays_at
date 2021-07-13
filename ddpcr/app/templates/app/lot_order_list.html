@@ -5,10 +5,7 @@
   <script>
     $(document).ready( function () {
         $('#lot-order-list').DataTable( {
-      "order": [
-        [ 1, "desc" ],
-        [ 0, "asc" ],
-      ],
+      "order": [],
       "columnDefs": [
         {
           "targets": 1,
@@ -36,6 +33,8 @@
           <thead>
             <tr>
               <th>Assay Name</th>
+              <th>Assay ID</th>
+              <th>Assay ID Secondary</th>
               <th>Status</th>
               <th></th>
             </tr>
@@ -44,10 +43,12 @@
             {% for assay in objects %}
               <tr>
                 <td>{{ assay.assay_name }}</td>
+                <td>{{ assay.assay_id }}</td>
+                <td>{{ assay.assay_id_sec }}</td>
                 <td>
                   {% if assay.status == 0 %}
                     <span class="badge bg-warning">{{ assay.statlab }}</span>
-                  {% elif assay.status < 3 %}
+                  {% elif assay.status < 2 %}
                     <span class="badge bg-error">{{ assay.statlab }}</span>
                   {% else %}
                     <span class="badge bg-success">{{ assay.statlab }}</span>
