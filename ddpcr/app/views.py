@@ -93,6 +93,19 @@ class AssayList(LoginRequiredMixin, BasicList):
     message = "Could not find any assays in database."
     redirect_url = None
 
+    def get_context_data(self, objects):
+        lots = {}
+        for obj in objects:
+            lots[obj.pk] = [lot for lot in AssayLOT.objects.filter(assay=obj) if lot.status != "Inactive"]
+        patients = {}
+        for obj in objects:
+            patients[obj.pk] = AssayPatient.objects.filter(assay=obj)
+        return {
+            "objects": objects,
+            "lots": lots,
+            "patients": patients,
+        }
+
 # Update existing assay
 class AssayUpdate(LoginRequiredMixin, BasicForm):
     model = AssayType
