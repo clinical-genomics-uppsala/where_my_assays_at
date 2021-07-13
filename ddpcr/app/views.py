@@ -56,7 +56,7 @@ class BasicForm(View):
     redirect_url = "lots"
 
     def get(self, request, pk, *args, **kwargs):
-        context= {
+        context = {
             "form": self.get_instance_form(request, pk),
             "object": self.model.objects.get(pk=pk),
         }
@@ -66,7 +66,10 @@ class BasicForm(View):
         form = self.get_instance_form(request, pk)
         if form.is_valid():
             obj = self.set_date(form.save(commit = False))
+            form.save_m2m()
             messages.success(request, self.get_message(obj))
+            if "Shortcut" in request.POST:
+                return redirect("assay-update", obj.assay.pk)
             return redirect(self.redirect_url)
         else:
             return self.get(request, pk)
