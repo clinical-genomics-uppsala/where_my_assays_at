@@ -112,14 +112,6 @@ class AssayType(models.Model):
         """ Display enzymes for assay type """
         return ', '.join(enzyme.name for enzyme in self.enzymes.all())
 
-    display_enzymes.short_description = 'Enzymes'
-
-    #Add method that returns the url to access a particular instance on my model name?
-    def get_absolute_url(self):
-        """Returns the url to access a particular instance of the model."""
-        return reverse('assayType-detail', args=[str(self.id)])
-
-
 class AssayLOT(models.Model):
 
     # Linked properties
@@ -148,6 +140,7 @@ class AssayLOT(models.Model):
         ordering = ['assay', 'status']
         permissions = (("can_update", "Update assay lot"),)
 
+    # Functions
     def __str__(self):
         return f'{self.lot}-{self.lot}'
 
@@ -168,11 +161,6 @@ class AssayLOT(models.Model):
         else:
             return None
 
-    def get_absolute_url(self):
-        """Returns the url to access a particular instance of the model."""
-        return reverse('assayLot-detail', args=[str(self.id)])
-
-
 class AssayPatient(models.Model):
 
     # Absolute properties
@@ -184,9 +172,10 @@ class AssayPatient(models.Model):
     class Meta:
         ordering = ['study_id']
 
+    # Functions
     def __str__(self):
-        return "{0}_{1}".format(self.assay, self.study_id)
+        return self.study_id
 
-    def get_absolute_url(self):
-        """Returns the url to access a particular instance of the model."""
-        return reverse('assayPatient-detail', args=[str(self.id)])
+    def display_assays(self):
+        """ Display assays for patient """
+        return ', '.join(assay.assay_name for assay in self.assay.all())
