@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -117,11 +118,12 @@ class AssayUpdate(LoginRequiredMixin, BasicForm):
         return "%s was updated." % (obj.assay_name)
 
 # Add new assay
-class AssayCreate(LoginRequiredMixin, CreateView):
+class AssayCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = AssayType
     form_class = AssayForm
     template_name = "app/assay_create.html"
     success_url = reverse_lazy("assays")
+    success_message = "Assay successfully created."
 
 ### Lots ###
 
