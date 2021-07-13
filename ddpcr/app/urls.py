@@ -24,12 +24,7 @@ urlpatterns = [
     path("lots/inactivate/", views.LotInactivateList.as_view(), name="lot-inactivate-list"),
     path("lots/inactivate/<int:pk>", views.LotInactivate.as_view(), name="lot-inactivate"),
 
-    path('patients/', views.AssayPatientView.as_view(), name='assayPatient'),
-    path('patients/create/', views.AssayPatientCreate.as_view(), name='assayPatient-create'),
-    path('patients/<int:pk>/', views.AssayPatientDetailView.as_view(), name='assayPatient-detail'),
-    path('patients/<int:pk>/update/', views.AssayPatientUpdate.as_view(), name='assayPatient-update'),
-
-    path('enzymes/', views.EnzymeView.as_view(), name='enzymes'),
-    path('enzymes/create/', views.EnzymeCreate.as_view(), name='enzyme-create'),
-    path('enzymes/<int:pk>/update/', views.EnzymeUpdate.as_view(), name='enzyme-update'),
+    path('patients/', views.PatientList.as_view(), name='patients'),
+    path('patients/create/', views.PatientCreate.as_view(), name='patient-create'),
+    path('patients/update/<int:pk>/', views.PatientUpdate.as_view(), name='patient-update'),
 ]

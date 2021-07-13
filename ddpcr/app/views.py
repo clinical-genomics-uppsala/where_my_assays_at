@@ -308,40 +308,49 @@ class LotInactivate(LoginRequiredMixin, AutoUpdateObjectView):
     def get_message(self, obj):
         return (" %s-%s was inactivated." % (obj.assay, obj.lot))
 
-# Assay Patient
+### Patients ###
 
-class AssayPatientView(LoginRequiredMixin, generic.ListView):
+# List of patients
+class PatientList(LoginRequiredMixin, BasicList):
     model = AssayPatient
+    template = 'app/patient_list.html'
+    message = "Could not find any patients in database."
+    redirect_url = None
 
-class AssayPatientDetailView(LoginRequiredMixin, generic.DetailView):
+# Update existing patient
+class PatientUpdate(LoginRequiredMixin, BasicForm):
     model = AssayPatient
+    template = "app/patient_update.html"
+    form = PatientForm
+    redirect_url = "patients"
 
-class AssayPatientCreate(LoginRequiredMixin, CreateView):
+    def get_message(self, obj):
+        return "%s was updated." % (obj.study_id)
+
+# Add new patient
+class PatientCreate(LoginRequiredMixin, View):
     model = AssayPatient
-    fields = '__all__' #not recommended should be explicit
+    form = PatientForm
+    template = "app/patient_create.html"
+    redirect_url = "patients"
 
-class AssayPatientUpdate(LoginRequiredMixin, UpdateView):
-    model = AssayPatient
-    fields = '__all__' #not recommended should be explicit
+    def get(self, request, *args, **kwargs):
+        context = {
+            "form": self.form(request.POST or None),
+        }
+        return render(request, self.template, context)
 
-class AssayPatientDelete(LoginRequiredMixin, DeleteView):
-    model = AssayPatient
-    success_url = reverse_lazy('assayPatient')
+    def post(self, request, *args, **kwargs):
+        form = self.form(request.POST or None)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.date_added = timezone.now()
+            obj.save()
+            form.save_m2m()
+            messages.success(request, self.get_message(obj))
+            return redirect(self.redirect_url)
+        else:
+            return self.get(request)
 
-#Enzyme
-
-class EnzymeView(LoginRequiredMixin, generic.ListView):
-    model = Enzyme
-    context_object_name='enzyme_list'
-    queryset = Enzyme.objects.all()
-    template_name = 'app/enzyme_list.html'
-
-class EnzymeCreate(LoginRequiredMixin, CreateView):
-    model = Enzyme
-    fields = '__all__'
-    success_url = reverse_lazy('enzyme')
-
-class EnzymeUpdate(LoginRequiredMixin, UpdateView):
-    model = Enzyme
-    fields = '__all__' #not recommended should be explicit
-    success_url = reverse_lazy('enzyme')
+    def get_message(self, obj):
+        return "Patient %s was added." % (obj)

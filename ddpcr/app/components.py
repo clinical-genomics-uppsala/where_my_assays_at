@@ -52,6 +52,20 @@ class BasicLotList(component.Component):
     def template(self, context):
         return "components/basic_lot_list/basic_lot_list.html"
 
+@component.register('basic_patient_list')
+class BasicPatientList(component.Component):
+    def context(self, button, icon, objects, title, url):
+        return {
+            'button': button,
+            'icon': icon,
+            'objects': objects,
+            'title': title,
+            'url': url,
+        }
+
+    def template(self, context):
+        return "components/basic_patient_list/basic_patient_list.html"
+
 @component.register('lot_info_modal')
 class LotInfoModal(component.Component):
     def context(self, lot):
@@ -96,3 +110,13 @@ class NavDropdown(component.Component):
     class Media:
         css = 'components/nav_dropdown/nav_dropdown.css'
         js = None
+
+@component.register('patient_info_modal')
+class PatientInfoModal(component.Component):
+    def context(self, patient):
+        return {
+            'patient': patient,
+        }
+
+    def template(self, context):
+        return "components/patient_info_modal/patient_info_modal.html"

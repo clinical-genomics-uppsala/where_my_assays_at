@@ -63,17 +63,9 @@
           <div class="btn-group dropright">
             {% component "nav_dropdown" icon="person" title="Patients" %}
             <div class="dropdown-menu">
-              <a class="dropdown-item" href="{% url 'assayPatient' %}">View list</a>
+              <a class="dropdown-item" href="{% url 'patients' %}">View list</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Add new</a>
-            </div>
-          </div>
-          <div class="btn-group dropright">
-            {% component "nav_dropdown" icon="list" title="Enzymes" %}
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="{% url 'enzymes' %}">View list</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Add new</a>
+              <a class="dropdown-item" href={% url 'patient-create' %}#">Add new</a>
             </div>
           </div>
         </div>
@@ -85,24 +77,8 @@
             {% component "message_alert" message=message %}
           {% endfor %}
         {% endif %}
-          {% block content %}{% endblock %}
-          {% block pagination %}
-            {% if is_paginated %}
-              <div class="pagination">
-                <span class="page-links">
-                  {% if page_obj.has_previous %}
-                    <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">previous</a>
-                  {% endif %}
-                  <span class="page-current">
-                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                  </span>
-                  {% if page_obj.has_next %}
-                      <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">next</a>
-                  {% endif %}
-                </span>
-              </div>
-            {% endif %}
-          {% endblock %}
+        {% block content %}
+        {% endblock %}
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from datetime import datetime
 import re
 
-from .models import AssayType, AssayLOT
+from .models import AssayType, AssayLOT, AssayPatient
 
 class AssayForm(ModelForm):
 
@@ -189,3 +189,34 @@ class LotValidateForm(LotForm):
         widgets = {
             "comment": forms.Textarea
         }
+
+# Standard form for patients
+class PatientForm(ModelForm):
+
+    class Meta:
+        model = AssayPatient
+        fields = [
+            "study_id",
+            "assay",
+            "comment",
+        ]
+        widgets = {
+            "comment": forms.Textarea,
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(PatientForm, self).__init__(*args, **kwargs)
+        for k, v in self.fields.items():
+            v.widget.attrs['placeholder'] = "Specify %s" % (k.capitalize().replace("_", " "))
+
+    def clean(self):
+        cleaned_data = super(PatientForm, self).clean()
+        self.check_study_id(cleaned_data)
+        return cleaned_data
+
+    def check_study_id(self, data):
+        target = data.get("study_id")
+        if target and not re.match(r"^[D,F,N,S]\d{3,4}$", target):
+            self._errors["study_id"] = self.error_class([
+                "Enter valid Study id.",
+            ])
