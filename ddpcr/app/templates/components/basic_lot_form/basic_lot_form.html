@@ -14,9 +14,11 @@
       <i class="bi bi-{{ icon }}"></i>
       <span class="mx-2">
         <small><i>{{ object.assay }}</i></small>
-        {% if object.lot != "" %}
+        {% if object.lot %}
          [ <strong>{{ object.lot }}</strong>
          ]
+        {% elif object.assay_name %}
+          <strong>{{ object.assay_name }}</strong>
         {% endif %}
          - {{ title }}
       </span>
@@ -41,7 +43,10 @@
           {% endfor %}
         </div>
       {% endfor %}
-      <button type="submit" class="btn btn-primary" value="Update">Submit</button>
+      <button type="submit" class="btn btn-primary" name="Update">Submit</button>
+      {% if icon == "check2-square" %}
+        <button type="submit" class="btn btn-primary" name="Shortcut">Submit & Edit Assay</button>
+      {% endif %}
     </form>
   </div>
 </div>
