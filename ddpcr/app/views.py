@@ -11,7 +11,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from .models import AssayType, AssayLOT, AssayPatient, Enzyme
 
-from app.forms import AssayForm, LotScanForm, LotValidateForm, LotForm
+from app.forms import AssayForm, LotOrderForm, LotScanForm, LotValidateForm, LotForm, PatientForm
 
 def index(request):
     if not request.user.is_authenticated:
@@ -166,16 +166,39 @@ class LotOrderList(LoginRequiredMixin, BasicList):
     redirect_url = "assays"
 
     def get_object_list(self):
-        objects = AssayType.objects.filter(status=4) | AssayType.objects.filter(status=3)
+        objects = AssayType.objects.filter(status=3) | AssayType.objects.filter(status=0)
         return objects
 
 # Create new lot with assay type and order date
-class LotOrder(LoginRequiredMixin, AutoUpdateObjectView):
-    model = AssayType
+class LotOrder(LoginRequiredMixin, View):
+    model = AssayLOT
+    template = "app/lot_order.html"
+    form = LotOrderForm
     redirect_url = "lot-order-list"
 
-    def update_object(self, obj):
-        AssayLOT.objects.create(assay=obj, date_order=timezone.now())
+    def get(self, request, pk, *args, **kwargs):
+        context = {
+            "form": self.form,
+            "object": self.get_assay(pk),
+        }
+        return render(request, self.template, context)
+
+    def post(self, request, pk, *args, **kwargs):
+        form = self.form(request.POST or None)
+        if form.is_valid():
+            assay = self.get_assay(pk)
+            project = form.cleaned_data.get("project_id")
+            self.create_new_lot(assay, project)
+            messages.success(request, self.get_message(assay))
+            return redirect(self.redirect_url)
+        else:
+            return self.get(request, pk)
+
+    def get_assay(self, pk):
+        return AssayType.objects.get(pk=pk)
+
+    def create_new_lot(self, obj, project):
+        AssayLOT.objects.create(assay=obj, date_order=timezone.now(), project_id=project)
         return
 
     def get_message(self, obj):
