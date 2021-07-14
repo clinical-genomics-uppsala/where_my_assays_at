@@ -119,7 +119,7 @@ class AssayLOT(models.Model):
 
     # Absolute properties
     project_id = models.CharField(default="CGU201813", max_length=20)
-    lot = models.CharField(max_length=10, unique=True)
+    lot = models.CharField(max_length=10)
     report_id = models.CharField(max_length=20, null=True, blank=True)
     fridge_id = models.CharField(max_length=10, null=True, blank=True)
     box_id = models.CharField(max_length=20, null=True, blank=True)
