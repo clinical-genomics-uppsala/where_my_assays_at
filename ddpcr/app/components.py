@@ -66,6 +66,16 @@ class BasicPatientList(component.Component):
     def template(self, context):
         return "components/basic_patient_list/basic_patient_list.html"
 
+@component.register('basic_plot')
+class BasicPlot(component.Component):
+    def context(self, plot):
+        return {
+            'plot': plot,
+        }
+
+    def template(self, context):
+        return "components/basic_plot/basic_plot.html"
+
 @component.register('lot_info_modal')
 class LotInfoModal(component.Component):
     def context(self, lot):
