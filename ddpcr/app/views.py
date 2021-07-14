@@ -11,95 +11,122 @@ from django.views import generic
 from django.views.generic import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-import json
+import json, re
 
 from .models import AssayType, AssayLOT, AssayPatient, Enzyme
 
 from app.forms import AssayForm, LotOrderForm, LotScanForm, LotValidateForm, LotForm, PatientForm
 
-def index(request):
-    if not request.user.is_authenticated:
-        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
-    """ View function for home page """
-    #  Collect numbers for table
-    num_assay = AssayType.objects.all().count()
-    num_lot = AssayLOT.objects.all().count()
-    num_patient = AssayPatient.objects.all().count()
-    num_enzyme = Enzyme.objects.all().count()
+class Index(LoginRequiredMixin, View):
 
-    # Number of visits to this view, as counted in the session variable.
-    num_visits = request.session.get('num_visits', 1)
-    request.session['num_visits'] = num_visits + 1
+    def get(self, request, *args, **kwargs):
+        to_plot = {
+            "entriesInDatabase": {
+                "data": self.entriesInDatabase(),
+            },
+            "lotsPerAssay": {
+                "data": self.lotsPerAssay(),
+            },
+            "assaysPerPatient": {
+                "data": self.assaysPerPatient(),
+            }
+        }
+        plots = []
+        for k, v in to_plot.items():
+            plots.append(self.get_plot_data(
+                k,
+                v["data"]["x_title"],
+                {},
+                {},
+                v["data"]["series"]
+            ))
+        context = {
+            "plots": plots,
+            }
 
-    ''' Collect numbers for plots '''
-    # Num assay type per patient
-    barData = []
-    barLabel = []
-    barAvg = []
-    numAssay = AssayPatient.objects.values('study_id').annotate(acount=Count('assay')).order_by()
-    avgNumAssay = AssayPatient.objects.values('study_id').annotate(acount=Count('assay')).aggregate(Avg('acount'))['acount__avg']
+        return render(request, 'app/index.html', context)
 
-    for entry in numAssay:
-      barData.append(entry['acount'])
-      barLabel.append(entry['study_id'])
-      barAvg.append(avgNumAssay)
+    def get_plot_data(self, plot_id, plot_x_title, plot_options, tooltip, series):
+        plot_data = {
+            "plot_id": plot_id,
+            "title": self.get_plot_title(plot_id),
+            "x_title": plot_x_title,
+            "y_title": self.get_plot_y_title(plot_id),
+            "plot_options": plot_options,
+            "tooltip": tooltip,
+            "series": series,
+        }
+        return plot_data
 
-    # Number of assay lots per assay type
-    assaylabels = []
-    assaytypelabels = []
-    assaydata = []
+    def get_plot_title(self, plot_id):
+        array = re.findall('[a-zA-Z][^A-Z]*', plot_id)
+        return ' '.join(array).capitalize()
 
-    inactive = []
-    active = []
-    validated = []
-    scanned = []
-    ordered = []
-    i = 0
-    assay = ''
+    def get_plot_y_title(self, plot_id):
+        array = re.findall('[a-zA-Z][^A-Z]*', plot_id)
+        return "Number of %s" % array[0]
 
-    for query in AssayLOT.objects.all().order_by('assay__assay_name'):
-        status = query.status()
-        if query.assay.assay_name != assay:
-            inactive.append(0)
-            active.append(0)
-            validated.append(0)
-            scanned.append(0)
-            ordered.append(0)
-            if assay != '':
-                i += 1
-            assay = query.assay.assay_name
-            assaytypelabels.append(query.assay.assay_name)
+    def assaysPerPatient(self):
+        data = AssayPatient.objects.values('study_id').annotate(acount=Count('assay')).order_by()
+        mean = AssayPatient.objects.values('study_id').annotate(acount=Count('assay')).aggregate(Avg('acount'))['acount__avg']
+        return {
+            "x_title": [ entry["study_id"] for entry in data ],
+            "series": [
+                {
+                    "type": "column",
+                    "name": "Assays per patient",
+                    "data": [ entry["acount"] for entry in data ],
+                },
+                {
+                    "type": "spline",
+                    "name": "Average",
+                    "marker": {
+                        "enabled": False,
+                    },
+                    "data": [mean] * data.count(),
+                },
+            ]
+        }
 
-        if status == 'Inactive':
-            inactive[i] += 1
-        elif status == 'Active':
-            active[i] += 1
-        elif status == 'Validated':
-            validated[i] += 1
-        elif status == 'Scanned':
-            scanned[i] += 1
-        elif status == 'Ordered':
-            ordered[i] += 1
+    def entriesInDatabase(self):
+        return {
+            "x_title": ["Assays", "Lots", "Patients"],
+            "series": [
+                {
+                    "type": "bar",
+                    "name": "Entries in Database",
+                    "data": [
+                        AssayType.objects.all().count(),
+                        AssayLOT.objects.all().count(),
+                        AssayPatient.objects.all().count(),
+                    ],
+                },
+            ]
+        }
 
-    # Save all in context-dict
-    context = {
-          'num_assay': num_assay,
-          'num_lot': num_lot,
-          'num_patient': num_patient,
-          'num_enzyme': num_enzyme,
-          'num_visits': num_visits,
-          'inactive': json.dumps(inactive),
-          'active': json.dumps(active),
-          'validated': json.dumps(validated),
-          'scanned': json.dumps(scanned),
-          'ordered': json.dumps(ordered),
-          'assaytypelabels': json.dumps(assaytypelabels),
-          'barData': json.dumps(barData),
-          'barLabel': json.dumps(barLabel),
-          'barAvg': json.dumps(barAvg),
-          }
-
-    return render(request, 'app/index.html', context=context)
+    def lotsPerAssay(self):
+        statCount = {
+            "Ordered": [],
+            "Scanned": [],
+            "Validated": [],
+            "Active": [],
+            "Low Volume": [],
+            "Inactive": [],
+        }
+        for k,v in statCount.items():
+            for entry in AssayType.objects.all():
+                statCount[k].append(len([ lot for lot in AssayLOT.objects.filter(assay=entry.pk) if lot.status == k ]))
+        data = {
+            "x_title": [ assay.assay_name for assay in AssayType.objects.all() ],
+            "series": [],
+        }
+        for k,v in statCount.items():
+            data["series"].append({
+                "name": k,
+                "type": "column",
+                "data": v,
+            })
+        return data
 
 # List of objects
 class BasicList(View):
