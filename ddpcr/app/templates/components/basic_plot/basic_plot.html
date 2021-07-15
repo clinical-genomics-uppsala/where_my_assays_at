@@ -14,27 +14,28 @@
   Highcharts.chart(
     {{ plot.plot_id }},
     {
-    chart: {
-        zoomType: 'x',
-    },
-    title: {
-        text: '',
-    },
-    subtitle: {
-      text: document.ontouchstart === undefined ?
-        'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in',
-    },
-    xAxis: {
-      categories: {{ plot.x_title|jsonify|safe }},
-      crosshair: true,
-    },
-    yAxis: {
-      title:{
-        text: {{ plot.y_title|jsonify|safe }},
+      chart: {
+          zoomType: 'x',
       },
-    },
-    plotOptions: {{ plot.plot_options|jsonify|safe }},
-    series: {{ plot.series|jsonify|safe }},
+      title: {
+          text: '',
+      },
+      subtitle: {
+        text: document.ontouchstart === undefined ?
+          'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in',
+      },
+      xAxis: {
+        categories: {{ plot.x_title|jsonify|safe }},
+        crosshair: true,
+      },
+      yAxis: {
+        title:{
+          text: {{ plot.y_title|jsonify|safe }},
+        },
+      },
+      plotOptions: {{ plot.plot_options|jsonify|safe }},
+      colors: {{ plot.colors|jsonify|safe}},
+      series: {{ plot.series|jsonify|safe }},
   });
 </script>
 {% endblock %}

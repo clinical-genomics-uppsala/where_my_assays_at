@@ -23,12 +23,15 @@ class Index(LoginRequiredMixin, View):
         to_plot = {
             "entriesInDatabase": {
                 "data": self.entriesInDatabase(),
+                "colors": ["#0d6efd"],
             },
             "lotsPerAssay": {
                 "data": self.lotsPerAssay(),
+                "colors": ["#ffc107", "#fd7e14", "#0d6efd", "#198754", "#dc3545", "#6c757d"],
             },
             "assaysPerPatient": {
                 "data": self.assaysPerPatient(),
+                "colors": ["#0d6efd", "#6c757d"],
             }
         }
         plots = []
@@ -38,6 +41,7 @@ class Index(LoginRequiredMixin, View):
                 v["data"]["x_title"],
                 {},
                 {},
+                v["colors"],
                 v["data"]["series"]
             ))
         context = {
@@ -46,7 +50,7 @@ class Index(LoginRequiredMixin, View):
 
         return render(request, 'app/index.html', context)
 
-    def get_plot_data(self, plot_id, plot_x_title, plot_options, tooltip, series):
+    def get_plot_data(self, plot_id, plot_x_title, plot_options, tooltip, colors, series):
         plot_data = {
             "plot_id": plot_id,
             "title": self.get_plot_title(plot_id),
@@ -54,6 +58,7 @@ class Index(LoginRequiredMixin, View):
             "y_title": self.get_plot_y_title(plot_id),
             "plot_options": plot_options,
             "tooltip": tooltip,
+            "colors": colors,
             "series": series,
         }
         return plot_data
