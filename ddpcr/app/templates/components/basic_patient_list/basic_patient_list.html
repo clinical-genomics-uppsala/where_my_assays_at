@@ -1,0 +1,55 @@
+{% block js %}
+<script>
+  $(document).ready( function () {
+    $('#table-id').DataTable( {
+      "order": [],
+      "columnDefs": [
+        {
+          "targets": 3,
+          "width": "25%",
+        },
+      ]
+    } );
+  } );
+</script>
+{% endblock %}
+<div class="card m-4">
+  <div class="card-header">
+    <div class="d-flex">
+      <i class="bi bi-{{ icon }}"></i>
+      <span class="mx-2">{{ title }}</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table id="table-id" class="stripe hover row-border" style="width:100%">
+        <thead>
+          <tr>
+            <th>Study ID</th>
+            <th>Added</th>
+            <th>Assays</th>
+            <th>Options</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for object in objects %}
+            <tr>
+              <td>{{ object.study_id }}</td>
+              <td>{{ object.date_added.date }}</td>
+              <td>{{ object.display_assays }}</td>
+              <td>
+                <div class="d-flex">
+                  <a class="btn btn-outline-primary" type="button" href="{% url url object.pk %}">
+                    <i class="bi bi-{{ icon }}"></i>
+                    <span class="mx-2">{{ button }}</span>
+                  </a>
+                {% component "patient_info_modal" patient=object %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

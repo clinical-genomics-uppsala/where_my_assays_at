@@ -1,0 +1,10 @@
+{% if status == "Active" %}
+  <span class="badge bg-success">{{ status }}</span>
+{% elif status == "Low Volume" %}
+  <span class="badge bg-success">Active</span>
+  <span class="badge bg-danger">{{ status }}</span>
+{% elif status == "Inactive" %}
+  <span class="badge bg-secondary">{{ status }}</span>
+{% else %}
+  <span class="badge bg-warning">{{ status }}</span>
+{% endif %}

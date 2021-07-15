@@ -2,46 +2,85 @@ from django.contrib import admin
 
 from .models import AssayType, Enzyme, AssayLOT, AssayPatient
 
-# Register your models here.
-
-# admin.site.register([
-#     AssayType,
-#     Enzyme,
-#     AssayLOT,
-#     AssayPatient
-# ])
-
-# class EnzymeAdmin(admin.ModelAdmin):
-#     pass
-admin.site.register(Enzyme) #, EnzymeAdmin)
+admin.site.register(Enzyme)
 
 class AssayLOTInline(admin.StackedInline):
     model = AssayLOT
     extra = 0
-    fields = ['lot','date_order','date_scanned','fridge_id', 'box_id', 'box_position','comment']
+    fields = [
+        "lot",
+        "fridge_id",
+        "box_id",
+        "box_position",
+        "comment",
+    ]
 
 class AssayTypeAdmin(admin.ModelAdmin):
-    list_display = ('assay_id', 'assay_id_sec', 'gene', 'display_enzymes','transcript', 'status')
-    fields = ['assay_id', 'assay_id_sec','gene','sequence','ref_build',
-                ('chromosome','position_from','position_to'),'transcript','cdna','protein',
-                'enzymes','temperature','status','comment']
-    search_fields = ['assay_id', 'gene']
-    list_filter = ['enzymes', 'gene', 'status']
-    inlines=[AssayLOTInline,]
+    list_display = (
+        "assay_name",
+        "assay_id",
+        "assay_id_sec",
+        "gene",
+        "transcript",
+        "cdna",
+        "protein",
+        "display_enzymes",
+        "status",
+    )
+    fields = [
+        "assay_id",
+        "assay_id_sec",
+        "tube_id",
+        "gene",
+        "transcript",
+        "cdna",
+        "protein",
+        "ref_build",
+        ("chromosome",
+         "position_from",
+         "position_to"),
+        "sequence",
+        "enzymes",
+        "temperature",
+        "limit_of_detection",
+        "status",
+        "comment",
+    ]
+    search_fields = ["assay_name"]
+    list_filter = [
+        "enzymes",
+        "gene",
+        "status"
+    ]
+    inlines=[AssayLOTInline]
 
 admin.site.register(AssayType, AssayTypeAdmin)
 
 class AssayLOTAdmin(admin.ModelAdmin):
-    list_display = ('assay', 'lot','fridge_id', 'box_id', 'box_position','volume_low')
-    search_fields = ['assay']
-    list_filter=['volume_low']
-    # inlines=[AssayPatient]
+    list_display = (
+        "assay",
+        "lot",
+        "report_id",
+        "fridge_id",
+        "box_id",
+        "box_position",
+    )
+    search_fields = [
+        "assay__assay_name",
+        "lot",
+    ]
 
 admin.site.register(AssayLOT, AssayLOTAdmin)
 
 class AssayPatientAdmin(admin.ModelAdmin):
-    list_display = ('assay','study_id','date_added')
-    search_fields = ['assay']
-    list_filter=['date_added']
+    list_display = (
+        "study_id",
+        "date_added",
+    )
+    search_fields = [
+        "assay__assay_name",
+        "study_id",
+    ]
+    list_filter=["date_added"]
 
 admin.site.register(AssayPatient, AssayPatientAdmin)

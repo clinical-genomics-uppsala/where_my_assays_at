@@ -8,6 +8,9 @@ Simple django app to handle ddPCR assay design and order. It is using a PostgreS
 
 - [python3](https://www.python.org/) >= 3.8.5 
 - [Django](https://www.djangoproject.com/) >= 3.1.7
+- [django_components](https://pypi.org/project/django-components/) >= 0.14
+- [django-computed-property](https://django-computed-property.readthedocs.io/en/latest/) >= 0.3.0
+- [django-widget-tweaks](https://pypi.org/project/django-widget-tweaks/) >= 1.4.8
 - [psycopg2](https://www.psycopg.org/) >= 2.8.6
 - [docker](https://www.docker.com/) >= 20.10.2
 
@@ -44,6 +47,7 @@ CREATE DATABASE ddpcr;
 Finally, migrate your database structure and start your development server like this:
 
 ```
+python mysite/manage.py makemigrations
 python mysite/manage.py migrate
 python mysite/manage.py runserver
 ```

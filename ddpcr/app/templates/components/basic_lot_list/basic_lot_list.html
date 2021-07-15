@@ -1,0 +1,76 @@
+{% block js %}
+<script>
+  $(document).ready( function () {
+    var sort_col = $('#table-id').find("th:contains('Status')")[0].cellIndex;
+    var opt_col = $('#table-id').find("th:contains('Options')")[0].cellIndex;
+    $('#table-id').DataTable( {
+      "order": [
+        [ sort_col, "asc" ],
+        [ 0, "asc" ],
+      ],
+      "columnDefs": [
+        {
+          "targets": sort_col,
+          "width": "15%",
+        },
+        {
+          "width": "35%",
+          "targets": opt_col,
+        },
+      ]
+    } );
+  } );
+</script>
+{% endblock %}
+<div class="card m-4">
+  <div class="card-header">
+    <div class="d-flex">
+      <i class="bi bi-{{ icon }}"></i>
+      <span class="mx-2">{{ title }}</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table id="table-id" class="stripe hover row-border" style="width:100%">
+        <thead>
+          <tr>
+            <th>Assay Name</th>
+            {% if complete %}
+              <th>Lot</th>
+              <th>Location</th>
+            {% endif %}
+            <th>Status</th>
+            <th>Options</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for object in objects %}
+            <tr>
+              <td>{{ object.assay }}</td>
+              {% if complete %}
+                <td>{{ object.lot }}</td>
+                {% if object.fridge_id %}
+                  <td>{{ object.fridge_id }}/{{ object.box_id }}:{{ object.box_position }}</td>
+                {% else %}
+                  <td>None</td>
+                {% endif %}
+              {% endif %}
+              <td>
+                {% component "lot_status" object.status %}
+              </td>
+              <td>
+                <div class="d-flex">
+                  <a class="btn btn-outline-primary" type="button" href="{% url url object.pk %}">
+                    <i class="bi bi-{{ icon }}"></i>
+                    <span class="mx-2">{{ button }}</span>
+                  </a>
+                {% component "lot_info_modal" lot=object %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

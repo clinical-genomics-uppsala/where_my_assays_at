@@ -1,0 +1,34 @@
+<button class="btn btn-outline-primary mx-2" type="button" data-toggle="modal" data-target="#{{ patient.study_id }}">
+  <i class="bi bi-info-lg"></i>
+  <span class="mx-2">View details</span>
+</button>
+<div class="modal fade" id="{{ patient.study_id }}" tabindex="-1" role="dialog" aria-labelledby="info-box" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{ patient.study_id }}</h5>
+      </div>
+      <div class="modal-body">
+        <table class="mx-2">
+          <tbody>
+            <tr>
+              <th scope="row">Added</th>
+              <td>{{ patient.date_added.date }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Assays</th>
+              <td>{{ patient.display_assays }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Comment</th>
+              <td>{{ patient.comment }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

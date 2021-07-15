@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+{% extends "app/base_generic.html" %}
+{% load component_tags %}
+{% block content %}
+  {% component "basic_patient_list" "Edit" "pencil-square" objects "View patient details and edit" "patient-update" %}
+{% endblock %}

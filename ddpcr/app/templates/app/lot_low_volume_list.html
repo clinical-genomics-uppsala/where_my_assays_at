@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+{% extends "app/base_generic.html" %}
+{% load component_tags %}
+{% block content %}
+  {% component "basic_lot_list" 'Low volume' True 'exclamation-triangle' objects 'Mark lot with low volume' 'lot-low-volume' %}
+{% endblock %}
