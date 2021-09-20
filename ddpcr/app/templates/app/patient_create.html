@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+{% extends "app/base_generic.html" %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="card m-4">
+  <div class="card-header">
+    <div class="d-flex">
+      <i class="bi bi-plus-circle"></i>
+      <span class="mx-2">
+        Create new patient
+      </span>
+    </div>
+  </div>
+  <div class="card-body m-5">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+          {% for error in form.non_field_errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% for field in form.visible_fields %}
+        <div class="my-3">
+          <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+          {% render_field field class="form-control" id=field.id_for_label %}
+          {% for error in field.errors %}
+          <span class="mx-2 text-danger"><small>{{ error }}</small></span>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary" value="Create">Submit</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

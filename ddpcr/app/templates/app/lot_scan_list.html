@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+{% extends "app/base_generic.html" %}
+{% load component_tags %}
+{% block content %}
+  {% component "basic_lot_list" 'Register as received' False 'upc-scan' objects 'Register lot as received' 'lot-scan' %}
+{% endblock %}

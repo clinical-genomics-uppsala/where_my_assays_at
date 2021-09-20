@@ -1,141 +1,463 @@
-# from django.shortcuts import render
-import datetime
-# Create your views here.
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render, redirect
-from django.urls import reverse_lazy, reverse
-from django.views import generic
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.utils import timezone
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Avg, Count
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.views import generic
+from django.views.generic import View
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
+import json, re
 
 from .models import AssayType, AssayLOT, AssayPatient, Enzyme
 
-from app.forms import AssayLotForm, AssayTypeForm
-#For login req views
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required, permission_required
+from app.forms import AssayForm, LotOrderForm, LotScanForm, LotValidateForm, LotForm, PatientForm
 
+class Index(LoginRequiredMixin, View):
 
-def index(request):
-    if not request.user.is_authenticated:
-        return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
-    """ View function for home page """
-    num_assay=AssayType.objects.all().count()
-    num_patient=AssayPatient.objects.all().count()
+    def get(self, request, *args, **kwargs):
+        to_plot = {
+            "entriesInDatabase": {
+                "data": self.entriesInDatabase(),
+                "colors": ["#0d6efd"],
+            },
+            "lotsPerAssay": {
+                "data": self.lotsPerAssay(),
+                "colors": ["#ffc107", "#fd7e14", "#0d6efd", "#198754", "#dc3545", "#6c757d"],
+            },
+            "assaysPerPatient": {
+                "data": self.assaysPerPatient(),
+                "colors": ["#0d6efd", "#6c757d"],
+            }
+        }
+        plots = []
+        for k, v in to_plot.items():
+            plots.append(self.get_plot_data(
+                k,
+                v["data"]["x_title"],
+                {},
+                {},
+                v["colors"],
+                v["data"]["series"]
+            ))
+        context = {
+            "plots": plots,
+            }
 
-    # Number of visits to this view, as counted in the session variable.
-    num_visits = request.session.get('num_visits', 1)
-    request.session['num_visits'] = num_visits + 1
+        return render(request, 'app/index.html', context)
 
-    context = {
-        'num_assay': num_assay,
-        'num_patient': num_patient,
-        'num_visits': num_visits,
-    }
-    return render(request, 'app/index.html', context=context)
+    def get_plot_data(self, plot_id, plot_x_title, plot_options, tooltip, colors, series):
+        plot_data = {
+            "plot_id": plot_id,
+            "title": self.get_plot_title(plot_id),
+            "x_title": plot_x_title,
+            "y_title": self.get_plot_y_title(plot_id),
+            "plot_options": plot_options,
+            "tooltip": tooltip,
+            "colors": colors,
+            "series": series,
+        }
+        return plot_data
 
-# Assay Type
-class AssayTypeView(LoginRequiredMixin, generic.ListView):
-    model = AssayType
-    # paginate_by = 10
-    context_object_name = 'assaytype_list'
-    queryset = AssayType.objects.all() #filter(sequence__icontains='AA')[:5]
-    template_name = 'app/assaytype_list.html'
-    # def get_context_data(self, **kwargs):
-    #     # Call the base implementation first to get the context
-    #     context = super(AssayTypeView, self).get_context_data(**kwargs)
-    #     # Create any data and add it to the context
-    #     context['some_data'] = 'This is just some data'
-    #     return context
-    # def get_queryset(self):
-    #     """ Return all Assays ids """
-    #     return AssayType.objects.all()
+    def get_plot_title(self, plot_id):
+        array = re.findall('[a-zA-Z][^A-Z]*', plot_id)
+        return ' '.join(array).capitalize()
 
+    def get_plot_y_title(self, plot_id):
+        array = re.findall('[a-zA-Z][^A-Z]*', plot_id)
+        return "Number of %s" % array[0]
 
-class AssayTypeDetailView(LoginRequiredMixin,generic.DetailView):
-    model = AssayType
-    # paginate_by = 10
-    # template_name = 'app/detail.html'
-    # def get_queryset(self):
-    #     """
-    #     Excludes any questions that aren't published yet.
-    #     """
-    #     return Question.objects.filter(pub_date__lte=timezone.now())
-class AssayTypeCreate(LoginRequiredMixin, CreateView):
-    model = AssayType
-    # fields = '__all__' #not recommended should be explicit
-    form_class = AssayTypeForm
+    def assaysPerPatient(self):
+        data = AssayPatient.objects.values('study_id').annotate(acount=Count('assay')).order_by()
+        mean = AssayPatient.objects.values('study_id').annotate(acount=Count('assay')).aggregate(Avg('acount'))['acount__avg']
+        return {
+            "x_title": [ entry["study_id"] for entry in data ],
+            "series": [
+                {
+                    "type": "column",
+                    "name": "Assays per patient",
+                    "data": [ entry["acount"] for entry in data ],
+                },
+                {
+                    "type": "spline",
+                    "name": "Average",
+                    "marker": {
+                        "enabled": False,
+                    },
+                    "data": [mean] * data.count(),
+                },
+            ]
+        }
 
-class AssayTypeUpdate(LoginRequiredMixin, UpdateView):
-    model = AssayType
-    # fields = '__all__' #not recommended should be explicit
-    form_class = AssayTypeForm
+    def entriesInDatabase(self):
+        return {
+            "x_title": ["Assays", "Lots", "Patients"],
+            "series": [
+                {
+                    "type": "bar",
+                    "name": "Entries in Database",
+                    "data": [
+                        AssayType.objects.all().count(),
+                        AssayLOT.objects.all().count(),
+                        AssayPatient.objects.all().count(),
+                    ],
+                },
+            ]
+        }
 
-class AssayTypeDelete(LoginRequiredMixin, DeleteView):
-    model = AssayType
-    success_url = reverse_lazy('assayType')
+    def lotsPerAssay(self):
+        statCount = {
+            "Ordered": [],
+            "Scanned": [],
+            "Validated": [],
+            "Active": [],
+            "Low Volume": [],
+            "Inactive": [],
+        }
+        for k,v in statCount.items():
+            for entry in AssayType.objects.all():
+                statCount[k].append(len([ lot for lot in AssayLOT.objects.filter(assay=entry.pk) if lot.status == k ]))
+        data = {
+            "x_title": [ assay.assay_name for assay in AssayType.objects.all() ],
+            "series": [],
+        }
+        for k,v in statCount.items():
+            data["series"].append({
+                "name": k,
+                "type": "column",
+                "data": v,
+            })
+        return data
 
-# Assay lot
-
-class AssayLotView(LoginRequiredMixin, generic.ListView):
+# List of objects
+class BasicList(View):
     model = AssayLOT
-    # paginate_by = 10
-    context_object_name = 'assaylot_list'
-    queryset = AssayLOT.objects.all() # Eller ska vi filtrera pa bara activated etc?
-    template_name = 'app/assaylot_list.html'
+    template = "app/lot_list.html"
+    message = None
+    redirect_url = "lots"
 
-class AssayLotDetailView(LoginRequiredMixin, generic.DetailView):
+    def get(self, request, *args, **kwargs):
+        objects = self.get_object_list()
+        context = self.get_context_data(objects)
+        if len(objects) == 0:
+            messages.error(request, self.message)
+            if self.redirect_url:
+                return redirect(self.redirect_url)
+        return render(request, self.template, context)
+
+    def get_object_list(self):
+        objects = self.model.objects.all()
+        return objects
+
+    def get_context_data(self, objects):
+        return {"objects": objects}
+
+# Template for form
+class BasicForm(View):
+    model = AssayLOT
+    template = "app/lot_update.html"
+    form = LotForm
+    redirect_url = "lots"
+
+    def get(self, request, pk, *args, **kwargs):
+        context = {
+            "form": self.get_instance_form(request, pk),
+            "object": self.model.objects.get(pk=pk),
+        }
+        return render(request, self.template, context)
+
+    def post(self, request, pk, *args, **kwargs):
+        form = self.get_instance_form(request, pk)
+        if form.is_valid():
+            obj = self.set_date(form.save(commit = False))
+            form.save_m2m()
+            messages.success(request, self.get_message(obj))
+            if "Shortcut" in request.POST:
+                return redirect("assay-update", obj.assay.pk)
+            return redirect(self.redirect_url)
+        else:
+            return self.get(request, pk)
+
+    def get_instance_form(self, request, pk):
+        return self.form(request.POST or None, instance = self.model.objects.get(pk=pk))
+
+    def set_date(self, obj):
+        obj.save()
+        return obj
+
+    def get_message(self, obj):
+        return "%s / %s was updated." % (obj.assay, obj.lot)
+
+### Assays ###
+
+# List of assays
+class AssayList(LoginRequiredMixin, BasicList):
+    model = AssayType
+    template = 'app/assay_list.html'
+    message = "Could not find any assays in database."
+    redirect_url = None
+
+    def get_context_data(self, objects):
+        lots = {}
+        for obj in objects:
+            lots[obj.pk] = [lot for lot in AssayLOT.objects.filter(assay=obj) if lot.status != "Inactive"]
+        patients = {}
+        for obj in objects:
+            patients[obj.pk] = AssayPatient.objects.filter(assay=obj)
+        return {
+            "objects": objects,
+            "lots": lots,
+            "patients": patients,
+        }
+
+# Update existing assay
+class AssayUpdate(LoginRequiredMixin, BasicForm):
+    model = AssayType
+    template = "app/assay_update.html"
+    form = AssayForm
+    redirect_url = "assays"
+
+    def get_message(self, obj):
+        return "%s was updated." % (obj.assay_name)
+
+# Add new assay
+class AssayCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = AssayType
+    form_class = AssayForm
+    template_name = "app/assay_create.html"
+    success_url = reverse_lazy("assays")
+    success_message = "Assay successfully created."
+
+### Lots ###
+
+# Unrendered view for lot update
+class AutoUpdateObjectView(View):
+    model = AssayLOT
+    redirect_url = "lots"
+
+    def get(self, request, pk, *args, **kwargs):
+        obj = self.get_object(pk)
+        self.update_object(obj)
+        messages.success(request, self.get_message(obj))
+        return redirect(self.redirect_url)
+
+    def get_object(self, pk):
+        return self.model.objects.get(pk=pk)
+
+    def update_object(self, obj):
+        object.save()
+        return
+
+    def get_message(self, obj):
+        return "%s was updated" % (obj)
+
+# Overview over all lots
+class LotList(LoginRequiredMixin, BasicList):
+    model = AssayLOT
+    message = "Could not find any lots in database."
+    redirect_url = None
+
+# Edit and Update lot
+class LotUpdate(LoginRequiredMixin, BasicForm):
     model = AssayLOT
 
-class AssayLotCreate(LoginRequiredMixin, CreateView):
+# Order new lot from list of assay types
+class LotOrderList(LoginRequiredMixin, BasicList):
+    model = AssayType
+    template = "app/lot_order_list.html"
+    message = "Could not find any assays eligible for ordering."
+    redirect_url = "assays"
+
+    def get_object_list(self):
+        objects = AssayType.objects.filter(status=3) | AssayType.objects.filter(status=0)
+        return objects
+
+# Create new lot with assay type and order date
+class LotOrder(LoginRequiredMixin, View):
     model = AssayLOT
-    # form_class = AssayLotCreateForm
-    fields = '__all__' #not recommended should be explicit
+    template = "app/lot_order.html"
+    form = LotOrderForm
+    redirect_url = "lot-order-list"
 
-class AssayLotUpdate(LoginRequiredMixin, UpdateView):
-    model = AssayLOT
-    form_class = AssayLotForm
-    # fields = '__all__' #not recommended should be explicit
+    def get(self, request, pk, *args, **kwargs):
+        context = {
+            "form": self.form,
+            "object": self.get_assay(pk),
+        }
+        return render(request, self.template, context)
 
-class AssayLotDelete(LoginRequiredMixin, DeleteView):
-    model = AssayLOT
-    success_url = reverse_lazy('assaylot')
+    def post(self, request, pk, *args, **kwargs):
+        form = self.form(request.POST or None)
+        if form.is_valid():
+            assay = self.get_assay(pk)
+            project = form.cleaned_data.get("project_id")
+            self.create_new_lot(assay, project)
+            messages.success(request, self.get_message(assay))
+            return redirect(self.redirect_url)
+        else:
+            return self.get(request, pk)
 
-# Assay Patient
-class AssayPatientView(LoginRequiredMixin, generic.ListView):
+    def get_assay(self, pk):
+        return AssayType.objects.get(pk=pk)
+
+    def create_new_lot(self, obj, project):
+        AssayLOT.objects.create(assay=obj, date_order=timezone.now(), project_id=project)
+        return
+
+    def get_message(self, obj):
+        return "Order for %s was registered." % (obj)
+
+# Register received order from list of ordered lots
+class LotScanList(LoginRequiredMixin, BasicList):
+    template = "app/lot_scan_list.html"
+    message = "Could not find any ordered lots."
+
+    def get_object_list(self):
+        objects = [lot for lot in self.model.objects.all() if lot.status == "Ordered"]
+        return objects
+
+# Form for details on received lot
+class LotScan(LoginRequiredMixin, BasicForm):
+    form = LotScanForm
+    template = "app/lot_scan.html"
+ 
+    def set_date(self, obj):
+        obj.date_scanned = timezone.now()
+        obj.save()
+        return obj
+
+    def get_message(self, obj):
+        return "%s/%s was marked as scanned." % (obj.assay, obj.lot)
+
+# Registered validated lot from list of received lots
+class LotValidateList(LoginRequiredMixin, BasicList):
+    template = "app/lot_validate_list.html"
+    message = "Could not find any scanned lots."
+
+    def get_object_list(self):
+        objects = [lot for lot in AssayLOT.objects.all() if lot.status == "Scanned"]
+        return objects
+
+# Form for details on validated lot
+class LotValidate(LoginRequiredMixin, BasicForm):
+    form = LotValidateForm
+    template = "app/lot_validate.html"
+ 
+    def set_date(self, obj):
+        obj.date_validated = timezone.now()
+        obj.save()
+        return obj
+
+    def get_message(self, obj):
+        return "%s/%s was marked as validated." % (obj.assay, obj.lot)
+
+# Activate lot from list of validated lots
+class LotActivateList(LoginRequiredMixin, BasicList):
+    template = 'app/lot_activate_list.html'
+    message = "Could not find any validated lots."
+
+    def get_object_list(self):
+        objects = [lot for lot in AssayLOT.objects.all() if lot.status == 'Validated']
+        return objects
+
+# Activate lot
+class LotActivate(LoginRequiredMixin, AutoUpdateObjectView):
+
+    def update_object(self, obj):
+        obj.date_activated = timezone.now()
+        obj.save()
+        return
+
+    def get_message(self, obj):
+        return (" %s-%s was activated." % (obj.assay, obj.lot))
+
+# Mark lot with low volume from list of activated lots
+class LotLowVolumeList(LoginRequiredMixin, BasicList):
+    template = 'app/lot_low_volume_list.html'
+    message = "Could not find any active lots with adequate volume."
+
+    def get_object_list(self):
+        objects = [lot for lot in AssayLOT.objects.all() if lot.status == 'Active']
+        return objects
+
+# Mark lot with low volume
+class LotLowVolume(LoginRequiredMixin, AutoUpdateObjectView):
+
+    def update_object(self, obj):
+        obj.date_low_volume = timezone.now()
+        obj.save()
+        return
+
+    def get_message(self, obj):
+        return (" %s-%s was marked as low volume." % (obj.assay, obj.lot))
+
+# Inactivate lot from list of activated lots
+class LotInactivateList(LoginRequiredMixin, BasicList):
+    template = 'app/lot_inactivate_list.html'
+    message = "Could not find any active lots."
+
+    def get_object_list(self):
+        objects = [lot for lot in AssayLOT.objects.all() if lot.status == 'Active' or lot.status == 'Low Volume']
+        return objects
+
+# Inactivate lot
+class LotInactivate(LoginRequiredMixin, AutoUpdateObjectView):
+
+    def update_object(self, obj):
+        obj.date_inactivated = timezone.now()
+        obj.save()
+        return
+
+    def get_message(self, obj):
+        return (" %s-%s was inactivated." % (obj.assay, obj.lot))
+
+### Patients ###
+
+# List of patients
+class PatientList(LoginRequiredMixin, BasicList):
     model = AssayPatient
-    # paginate_by = 10
+    template = 'app/patient_list.html'
+    message = "Could not find any patients in database."
+    redirect_url = None
 
-class AssayPatientDetailView(LoginRequiredMixin, generic.DetailView):
+# Update existing patient
+class PatientUpdate(LoginRequiredMixin, BasicForm):
     model = AssayPatient
+    template = "app/patient_update.html"
+    form = PatientForm
+    redirect_url = "patients"
 
-class AssayPatientCreate(LoginRequiredMixin, CreateView):
+    def get_message(self, obj):
+        return "%s was updated." % (obj.study_id)
+
+# Add new patient
+class PatientCreate(LoginRequiredMixin, View):
     model = AssayPatient
-    fields = '__all__' #not recommended should be explicit
+    form = PatientForm
+    template = "app/patient_create.html"
+    redirect_url = "patients"
 
-class AssayPatientUpdate(LoginRequiredMixin, UpdateView):
-    model = AssayPatient
-    fields = '__all__' #not recommended should be explicit
+    def get(self, request, *args, **kwargs):
+        context = {
+            "form": self.form(request.POST or None),
+        }
+        return render(request, self.template, context)
 
-class AssayPatientDelete(LoginRequiredMixin, DeleteView):
-    model = AssayPatient
-    success_url = reverse_lazy('assayPatient')
+    def post(self, request, *args, **kwargs):
+        form = self.form(request.POST or None)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.date_added = timezone.now()
+            obj.save()
+            form.save_m2m()
+            messages.success(request, self.get_message(obj))
+            return redirect(self.redirect_url)
+        else:
+            return self.get(request)
 
-#Enzyme
-
-class EnzymeView(LoginRequiredMixin, generic.ListView):
-    model = Enzyme
-    context_object_name='enzyme_list'
-    queryset = Enzyme.objects.all()
-    template_name = 'app/enzyme_list.html'
-
-class EnzymeCreate(LoginRequiredMixin, CreateView):
-    model = Enzyme
-    fields = '__all__'
-    success_url = reverse_lazy('enzyme')
-
-class EnzymeUpdate(LoginRequiredMixin, UpdateView):
-    model = Enzyme
-    fields = '__all__' #not recommended should be explicit
-    success_url = reverse_lazy('enzyme')
+    def get_message(self, obj):
+        return "Patient %s was added." % (obj)
