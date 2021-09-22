@@ -11,7 +11,8 @@ from django.views import generic
 from django.views.generic import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-import json, re
+import io, json, math, re
+import pandas as pd
 
 from .models import AssayType, AssayLOT, AssayPatient, Enzyme
 
@@ -144,7 +145,7 @@ class BasicList(View):
         objects = self.get_object_list()
         context = self.get_context_data(objects)
         if len(objects) == 0:
-            messages.error(request, self.message)
+            messages.info(request, self.message)
             if self.redirect_url:
                 return redirect(self.redirect_url)
         return render(request, self.template, context)
@@ -461,3 +462,81 @@ class PatientCreate(LoginRequiredMixin, View):
 
     def get_message(self, obj):
         return "Patient %s was added." % (obj)
+
+# Add new patients from file
+class PatientsCreate(LoginRequiredMixin, View):
+    template = "app/patients_create.html"
+    redirect_url = "patients"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template, {})
+
+    def post(self, request, *args, **kwargs):
+        if "upload" in request.FILES:
+            if not self.check_tsv_ext(request):
+                return self.get(request)
+            upload = self.get_tsv_data(request)
+            if upload.empty:
+                return self.get(request)
+            else:
+                self.add_tsv_data(request, upload)
+                return redirect(self.redirect_url)
+        else:
+            messages.error(request, "No tsv file chosen for upload.")
+            return self.get(request)
+
+    def check_tsv_ext(self, request):
+        if request.FILES["upload"].name.endswith(".tsv"):
+            return True
+        else:
+            messages.error(request, "%s is not a tsv file." % request.FILES["upload"].name)
+            return False
+
+    def get_tsv_data(self, request):
+        data = request.FILES["upload"].read().decode("UTF-8")
+        upload = pd.read_table(io.StringIO(data))
+        if not self.check_tsv_col(upload):
+            messages.error(request, "%s does not contain required columns." % request.FILES["upload"].name)
+            return pd.DataFrame()
+        return upload
+
+    def check_tsv_col(self, data):
+        expected = ["study_id", "gene", "protein", "cdna", "comment"]
+        return set(expected).issubset(data.columns)
+
+    def add_tsv_data(self, request, data):
+        for _, row in data.iterrows():
+            if not AssayPatient.objects.filter(study_id=row["study_id"]).exists():
+                if self.check_study_id(row["study_id"]):
+                    patient, created = AssayPatient.objects.update_or_create(
+                        study_id = row["study_id"],
+                        date_added = timezone.now(),
+                        comment = row["comment"],
+                    )
+                    messages.success(request, "%s was added." % row["study_id"])
+                else:
+                    messages.error(request, "%s is not a valid study_id." % row["study_id"])
+                    break
+            else:
+                patient = AssayPatient.objects.get(study_id=row["study_id"])
+            if self.check_assay(request, row):
+                assay_id = AssayType.objects.get(
+                    gene=row["gene"],
+                    protein=row["protein"],
+                    cdna=row["cdna"],
+                )
+                patient.assay.add(assay_id)
+                messages.info(request, "Updating %s." % row["study_id"])
+            else:
+                break
+        return
+
+    def check_study_id(self, study_id):
+        return re.match(r"^[D,F,N,S]\d{3,4}$", study_id)
+
+    def check_assay(self, request, row):
+        if AssayType.objects.filter(gene=row["gene"], protein=row["protein"], cdna=row["cdna"]).exists():
+            return True
+        else:
+            messages.error(request, "Assay represented by %s %s %s does not exist in database." % (row["gene"], row["protein"], row["cdna"]))
+            return False
