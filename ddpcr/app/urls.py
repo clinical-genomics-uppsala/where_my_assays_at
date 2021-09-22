@@ -7,6 +7,7 @@ urlpatterns = [
 
     path('assays/', views.AssayList.as_view(), name='assays'),
     path('assays/create/', views.AssayCreate.as_view(), name='assay-create'),
+    path('assays/upload/', views.AssaysCreate.as_view(), name="assays-create"),
     path('assays/update/<int:pk>/', views.AssayUpdate.as_view(), name='assay-update'),
 
     path("lots/", views.LotList.as_view(), name="lots"),

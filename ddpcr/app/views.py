@@ -540,3 +540,84 @@ class PatientsCreate(LoginRequiredMixin, View):
         else:
             messages.error(request, "Assay represented by %s %s %s does not exist in database." % (row["gene"], row["protein"], row["cdna"]))
             return False
+
+# Add new assays from file
+class AssaysCreate(PatientsCreate):
+    template = "app/assays_create.html"
+    redirect_url = "assays"
+
+    def check_tsv_col(self, data):
+        expected = [field.name for field in AssayType._meta.get_fields()]
+        for entry in ["assaylot", "assaypatient", "id", "assay_name"]:
+            expected.remove(entry)
+        return set(expected).issubset(data.columns)
+
+    def add_tsv_data(self, request, data):
+        for _, row in data.iterrows():
+            if not AssayType.objects.filter(gene=row["gene"], protein=row["protein"], cdna=row["cdna"]).exists():
+                if self.check_columns(request, row):
+                    assay, created = AssayType.objects.update_or_create(
+                        assay_id = row["assay_id"],
+                        assay_id_sec = row["assay_id_sec"],
+                        tube_id = row["tube_id"],
+                        gene = row["gene"],
+                        sequence = row["sequence"],
+                        ref_build = row["ref_build"],
+                        chromosome = row["chromosome"],
+                        position_from = row["position_from"],
+                        position_to = row["position_to"],
+                        transcript = row["transcript"],
+                        cdna = row["cdna"],
+                        protein = row["protein"],
+                        temperature = row["temperature"],
+                        limit_of_detection = row["limit_of_detection"],
+                        status = row["status"],
+                        comment = row["comment"],
+                    )
+                    for enzyme in row["enzymes"].split(","):
+                        enzyme = Enzyme.objects.get(name=enzyme)
+                        assay.enzymes.add(enzyme)
+                    messages.success(request, "Assay represented by %s %s %s was added." % (row["gene"], row["protein"], row["cdna"]))
+                else:
+                    break
+            else:
+                messages.info(request, "Assay represented by %s %s %s already exists." % (row["gene"], row["protein"], row["cdna"]))
+        return
+
+    def check_columns(self, request, row):
+        if type(row["gene"]) is float:
+            messages.error(request, "Gene name is required.")
+            return False
+        elif type(row["sequence"]) is not float and not re.match(r"^[A,T,G,C]+\[[A,G,T,C,-]+\/[A,T,G,C,-]+\][G,T,C,A]+", row["sequence"]):
+            messages.error(request, "%s is not a valid sequence." % row["sequence"])
+            return False
+        elif not re.match(r"^hg[1,3][8,9]", row["ref_build"]):
+            messages.error(request, "%s is not a valid reference build format. Either hg19 or hg38." % row["ref_build"])
+            return False
+        elif not row["chromosome"] in list(range(1, 26)):
+            messages.error(request, "%s is not a valid Chromosome. Any integer from 1 to 25." % row["chromosome"])
+            return False
+        elif not isinstance(row["position_from"], int) and not isinstance(row["position_to"], int):
+            messages.error(request, "%s or %s is not a valid Position. Position has to be a positive integer." % (row["position_from"], row["position_to"]))
+            return False
+        elif not re.match(r"^NM_\d+\.*\d$", row["transcript"]):
+            messages.error(request, "%s is not a valid transcript id." % row["transcript"])
+            return False
+        elif not re.match(r"^c\.\d+[_,\-,+]*\d+[A,C,G,T,d,e,l,u,p,i,n,s]+>?[A,C,G,T,l,o,s]+$", row["cdna"]):
+            messages.error(request, "%s is not a valid cdna id." % row["cdna"])
+            return False
+        elif not re.match(r"^p\..+", row["protein"]):
+            messages.error(request, "%s is not a valid protein id." % row["protein"])
+            return False
+        elif not isinstance(row["temperature"], int):
+            messages.error(request, "%s is not a valid temperature." % row["temperature"])
+            return False
+        elif type(row["status"]) is float or not row["status"] in list(range(0, 4)):
+            messages.error(request, "%s is not a valid status. 0 = Pending, 1 = Design failed, 2 = Run failed, 3 = Ok." % row["status"])
+            return False
+        else:
+            for enzyme in row["enzymes"].split(","):
+                if not Enzyme.objects.filter(name=enzyme).exists():
+                    messages.error(request, "%s does not exist in database." % enzyme)
+                    return False
+        return True

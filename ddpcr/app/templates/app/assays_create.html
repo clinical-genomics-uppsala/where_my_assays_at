@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% extends "app/base_generic.html" %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="card m-4">
+  <div class="card-header">
+    <div class="d-flex">
+      <i class="bi bi-plus-circle"></i>
+      <span class="mx-2">
+        Create new assays from file
+      </span>
+    </div>
+  </div>
+  <div class="card-body m-5">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+        <div class="my-3">
+          <label class="form-label" for="file">TSV file:</label>
+          <input class="form-control" type="file" name="upload" id="file">
+        </div>
+        <button type="submit" class="btn btn-primary" name="upload">Upload</button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#info">Info</button>
+        <div class="modal fade" id="info" tabindex="-1" role="dialog" aria-labelledby="info-box" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Info on data input</h5>
+              </div>
+              <div class="modal-body m-3">
+                <p>
+                  The input tsv file should contain the following columns:
+                  study_id, gene, cdna, protein, comment. Per line only a
+                  single assay, defined by gene, cdna and protein, can be
+                  linked to a single study_id. Please check out the example
+                  below:
+                </p>
+                <div class="card bg-light m-1">
+                  <div class="card-body m-2">
+                    <code><pre>study_id&#9;gene&#9;cdna&#9;protein&#9;comment</pre></code>
+                    <code><pre>D001&#9;NRAS&#9;c.85G>A&#9;p.G12D&#9;Great comment here</pre></code>
+                    <code><pre>D001&#9;KRAS&#9;c.35G>A&#9;p.G12D&#9;Great comment here</pre></code>
+                    <code>...</code>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
