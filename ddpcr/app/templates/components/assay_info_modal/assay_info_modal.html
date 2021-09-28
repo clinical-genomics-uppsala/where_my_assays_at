@@ -18,8 +18,8 @@
         <h5 class="modal-title" id="exampleModalLabel">{{ assay.assay_name }}</h5>
         {% if assay.status == 0 %}
           <span class="badge bg-warning">{{ assay.statlab }}</span>
-        {% elif assay.status < 2 %}
-          <span class="badge bg-error">{{ assay.statlab }}</span>
+        {% elif assay.status < 3 %}
+          <span class="badge bg-danger">{{ assay.statlab }}</span>
         {% else %}
           <span class="badge bg-success">{{ assay.statlab }}</span>
         {% endif %}
