@@ -119,13 +119,15 @@ class Index(LoginRequiredMixin, View):
             "Low Volume": [],
             "Inactive": [],
         }
-        for k,v in statCount.items():
-            for entry in AssayType.objects.all():
-                statCount[k].append(len([ lot for lot in AssayLOT.objects.filter(assay=entry.pk) if lot.status == k ]))
         data = {
-            "x_title": [ assay.assay_name for assay in AssayType.objects.all() ],
+            "x_title": [],
             "series": [],
         }
+        for entry in AssayType.objects.all():
+            if AssayLOT.objects.filter(assay=entry.pk).count() > 1:
+                data["x_title"].append(entry.assay_name)
+                for k,v in statCount.items():
+                    statCount[k].append(len([ lot for lot in AssayLOT.objects.filter(assay=entry.pk) if lot.status == k ]))
         for k,v in statCount.items():
             data["series"].append({
                 "name": k,
