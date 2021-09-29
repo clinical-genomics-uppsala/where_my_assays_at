@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from datetime import datetime
 import re
+from searchableselect.widgets import SearchableSelect
 
 from .models import AssayType, AssayLOT, AssayPatient
 
@@ -192,7 +193,6 @@ class LotValidateForm(LotForm):
 
 # Standard form for patients
 class PatientForm(ModelForm):
-
     class Meta:
         model = AssayPatient
         fields = [
@@ -201,6 +201,7 @@ class PatientForm(ModelForm):
             "comment",
         ]
         widgets = {
+            "assay": SearchableSelect(model='app.AssayType', search_field='assay_name', many=True),
             "comment": forms.Textarea,
         }
 

@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_bootstrap_icons',
     'django_components',
+    'searchableselect',
     'widget_tweaks',
 ]
 

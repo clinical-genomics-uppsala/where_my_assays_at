@@ -1,9 +1,10 @@
-from django.urls import path
+from django.urls import include, path, re_path
 
 from . import views
 
 urlpatterns = [
     path('', views.Index.as_view(), name='index'),
+    re_path('^searchableselect/', include('searchableselect.urls')),
 
     path('assays/', views.AssayList.as_view(), name='assays'),
     path('assays/create/', views.AssayCreate.as_view(), name='assay-create'),
