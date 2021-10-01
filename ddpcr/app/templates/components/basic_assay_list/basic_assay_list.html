@@ -49,7 +49,7 @@
               <td>
                 {% if object.status == 0 %}
                   <span class="badge bg-warning">{{ object.statlab }}</span>
-                {% elif object.status < 2 %}
+                {% elif object.status < 3 %}
                   <span class="badge bg-danger">{{ object.statlab }}</span>
                 {% else %}
                   <span class="badge bg-success">{{ object.statlab }}</span>

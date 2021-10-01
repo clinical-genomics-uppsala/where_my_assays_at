@@ -29,16 +29,15 @@
               <div class="modal-body m-3">
                 <p>
                   The input tsv file should contain the following columns:
-                  study_id, gene, cdna, protein, comment. Per line only a
-                  single assay, defined by gene, cdna and protein, can be
-                  linked to a single study_id. Please check out the example
-                  below:
+                  assay_id, assay_id_sec, tube_id, gene, sequence, ref_build,
+                  chromosome, position_from, position_to, transcript, cdna,
+                  protein, temperature, limit_of_detection, status, comment,
+                  enzymes. Please check out the example below:
                 </p>
                 <div class="card bg-light m-1">
                   <div class="card-body m-2">
-                    <code><pre>study_id&#9;gene&#9;cdna&#9;protein&#9;comment</pre></code>
-                    <code><pre>D001&#9;NRAS&#9;c.85G>A&#9;p.G12D&#9;Great comment here</pre></code>
-                    <code><pre>D001&#9;KRAS&#9;c.35G>A&#9;p.G12D&#9;Great comment here</pre></code>
+                    <code><pre>assay_id&#9;assay_id_sec&#9;tube_id&#9;gene&#9;sequence&#9;ref_build&#9;chromosome&#9;position_from&#9;position_to&#9;transcript&#9;cdna&#9;protein&#9;temperature&#9;limit_of_detection&#9;status&#9;comment&#9;enzymes</pre></code>
+                    <code><pre>dHsaMDS900210369&#9;&#9;&#9;NRAS&#9;ATGC&#9;hg38&#9;1&#9;114704469&#9;114716771&#9;NM_002524&#9;c.85G>A&#9;p.G12D&#9;55&#9;&#9;3&#9;Great comment here&#9;HaeIII,MseI,HindIII</pre></code>
                     <code>...</code>
                   </div>
                 </div>
