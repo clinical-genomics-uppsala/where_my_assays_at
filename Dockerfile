@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     TZ=Europe/Stockholm
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y libpq-dev=11.12-0+deb10u1 build-essential=12.6 && \
+    apt-get install --no-install-recommends -y libpq-dev=11.13-0+deb10u1 build-essential=12.6 && \
     rm -rf /var/lib/apt/lists/*
 WORKDIR /home/app
 COPY requirements.txt ./ddpcr/ /home/app/
