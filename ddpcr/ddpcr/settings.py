@@ -14,7 +14,7 @@ SECRET_KEY = 'kwqn*kco%=_v!uhp6^#m3p_xg=r*d#9!qe11o6$k4%0b!h3@m%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.environ.get('WEB_HOST', 'ddpcr.cgu.igp.uu.se')]
 
 
 # Application definition
