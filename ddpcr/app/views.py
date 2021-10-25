@@ -534,7 +534,7 @@ class PatientsCreate(LoginRequiredMixin, View):
         return
 
     def check_study_id(self, study_id):
-        return re.match(r"^[D,F,N,S]\d{3,4}$", study_id)
+        return re.match(r"^[D,F,N,S]*\d{2,4}\D{0,2}$", study_id)
 
     def check_assay(self, request, row):
         if AssayType.objects.filter(gene=row["gene"], protein=row["protein"], cdna=row["cdna"]).exists():
