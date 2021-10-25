@@ -605,7 +605,7 @@ class AssaysCreate(PatientsCreate):
         elif not re.match(r"^NM_\d+\.*\d$", row["transcript"]):
             messages.error(request, "%s is not a valid transcript id." % row["transcript"])
             return False
-        elif not re.match(r"^c\.\d+[_,\-,+]*\d+[A,C,G,T,d,e,l,u,p,i,n,s]+>?[A,C,G,T,l,o,s]+$", row["cdna"]):
+        elif not re.match(r"^c\.[A,C,G,T]*\d+[-,+]*\d*[_,\-,+]*\d*[+]*\d*[A,C,G,T,d,e,l,u,p,i,n,s]+>?[A,C,G,T,l,o,s]*$", row["cdna"]):
             messages.error(request, "%s is not a valid cdna id." % row["cdna"])
             return False
         elif not re.match(r"^p\..+", row["protein"]):
