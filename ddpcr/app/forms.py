@@ -54,7 +54,7 @@ class AssayForm(ModelForm):
                 "message": "Enter valid Transcript id."
             },
             "cdna": {
-                "regex": r"^c\.\d+[_,\-,+]*\d+[A,C,G,T,d,e,l,u,p,i,n,s]+>?[A,C,G,T,l,o,s]+$",
+                "regex": r"^c\.[A,C,G,T]*\d+[-,+]*\d*[_,\-,+]*\d*[+]*\d*[A,C,G,T,d,e,l,u,p,i,n,s]+>?[A,C,G,T,l,o,s]*$",
                 "message": "Enter valid cDNA id."
             },
             "protein": {
