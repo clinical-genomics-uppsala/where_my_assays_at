@@ -82,7 +82,7 @@ class AssayType(models.Model):
     protein = models.CharField(max_length=100, default="p.?")
     enzymes = models.ManyToManyField(Enzyme)
     temperature = models.PositiveIntegerField(null=True, blank=True)
-    limit_of_detection = models.FloatField(blank=True)
+    limit_of_detection = models.FloatField(null=True, blank=True)
     status = models.IntegerField(choices=Status.choices, default=Status.PENDING)
     comment = models.CharField(max_length=500, null=True, blank=True)
 
