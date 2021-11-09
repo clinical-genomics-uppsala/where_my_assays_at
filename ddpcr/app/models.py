@@ -126,12 +126,12 @@ class AssayLOT(models.Model):
     box_position = models.CharField(max_length=20, null=True, blank=True)
     comment = models.CharField(max_length=500, null=True, blank=True)
 
-    date_order = models.DateTimeField('date ordered', validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )])
-    date_scanned = models.DateTimeField('date scanned',null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now() )])
-    date_validated = models.DateTimeField('date validated', null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )])
-    date_activated = models.DateTimeField('date activated', null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )])
+    date_order = models.DateTimeField('date ordered')
+    date_scanned = models.DateTimeField('date scanned',null=True, blank=True)
+    date_validated = models.DateTimeField('date validated', null=True, blank=True)
+    date_activated = models.DateTimeField('date activated', null=True, blank=True)
     date_low_volume = models.DateTimeField('date low volume', null=True, blank=True)
-    date_inactivated = models.DateTimeField('date inactivated', null=True, blank=True, validators=[MaxValueValidator(limit_value=timezone.now, message=_('Make sure the date is not in the future. Todays date is %s') % timezone.now )])
+    date_inactivated = models.DateTimeField('date inactivated', null=True, blank=True)
 
     # Computed properties
     status = ComputedTextField(compute_from='get_status')
