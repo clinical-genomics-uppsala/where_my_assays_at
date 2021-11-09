@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from computed_property import ComputedTextField
+from computed_property import ComputedCharField, ComputedTextField
 from datetime import date
 
 class Enzyme(models.Model):
@@ -134,7 +134,7 @@ class AssayLOT(models.Model):
     date_inactivated = models.DateTimeField('date inactivated', null=True, blank=True)
 
     # Computed properties
-    status = ComputedTextField(compute_from='get_status')
+    status = ComputedCharField(compute_from='get_status', default='Ordered', max_length=20)
 
     class Meta:
         ordering = ['assay', 'status']
