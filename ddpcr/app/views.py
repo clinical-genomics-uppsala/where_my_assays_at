@@ -490,6 +490,8 @@ class PatientsCreate(LoginRequiredMixin, View):
     def check_tsv_ext(self, request):
         if request.FILES["upload"].name.endswith(".tsv"):
             return True
+        elif request.FILES["upload"].name.endswith(".txt"):
+            return True
         else:
             messages.error(request, "%s is not a tsv file." % request.FILES["upload"].name)
             return False
